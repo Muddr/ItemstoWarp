@@ -51,7 +51,7 @@ public class Commands implements CommandExecutor {
 					return true;
 				}
 				//itw create Command
-				if (args[0].equals("create")) {
+				if (args[0].equalsIgnoreCase("create")) {
 					if (player.hasPermission("itemstowarp.create")) {
 						if (args.length == 1) {
 							player.sendMessage(plugin.Util.parseColors("^redYou must include a name to set a warp."));
@@ -62,14 +62,14 @@ public class Commands implements CommandExecutor {
 						
 						else {
 							Location playerloc = player.getLocation();
-							plugin.Warps.createWarp(playerName, playerloc, args[1]);
+							plugin.Warps.createWarp(playerName, playerloc, args[1].toLowerCase());
 						}
 					}
 					else {
 						player.sendMessage(plugin.Util.parseColors("^redYou do not have permission to create warps."));
 					}
 				}
-				if (args[0].equals("toggle")) {
+				if (args[0].equalsIgnoreCase("toggle")) {
 					if (player.hasPermission("itemstowarp.makeprivate") || player.hasPermission("itemstowarp.makeprivate.any")) {
 						if (args.length == 1) {
 							player.sendMessage(plugin.Util.parseColors("^redYou must include a name to toggle a warp."));
@@ -79,14 +79,14 @@ public class Commands implements CommandExecutor {
 						}
 						
 						else {
-							plugin.Warps.togglePrivate(playerName, args[1]);
+							plugin.Warps.togglePrivate(playerName, args[1].toLowerCase());
 						}
 					}
 					else {
 						player.sendMessage(plugin.Util.parseColors("^redYou do not have permission to toggle warps."));
 					}
 				}
-				if (args[0].equals("remove")) {
+				if (args[0].equalsIgnoreCase("remove")) {
 					if (player.hasPermission("itemstowarp.remove") || player.hasPermission("itemstowarp.remove.any")) {
 						if (args.length == 1) {
 							player.sendMessage(plugin.Util.parseColors("^redYou must include a name to set a warp."));
@@ -95,14 +95,14 @@ public class Commands implements CommandExecutor {
 							player.sendMessage(plugin.Util.parseColors("^redWarp name can not contain spaces."));
 						}
 						else {
-							plugin.Warps.removeWarp(playerName, args[1]);
+							plugin.Warps.removeWarp(playerName, args[1].toLowerCase());
 						}
 					}
 					else {
 						player.sendMessage(plugin.Util.parseColors("^redYou do not have permission to remove warps."));
 					}
 				}
-				if (args[0].equals("warp")) {
+				if (args[0].equalsIgnoreCase("warp")) {
 					if (player.hasPermission("itemstowarp.warp") || player.hasPermission("itemstowarp.warp.any")) {
 						if (args.length == 1) {
 							player.sendMessage(plugin.Util.parseColors("^redYou must include a name to set a warp."));
@@ -112,14 +112,14 @@ public class Commands implements CommandExecutor {
 						}
 						
 						else {
-							plugin.Warps.warpPlayer(playerName, args[1]);
+							plugin.Warps.warpPlayer(playerName, args[1].toLowerCase());
 						}
 					}
 					else {
 						player.sendMessage(plugin.Util.parseColors("^redYou do not have permission to use warps."));
 					}
 				}
-				if (args[0].equals("list")) {
+				if (args[0].equalsIgnoreCase("list")) {
 					if (player.hasPermission("itemstowarp.list") || player.hasPermission("itemstowarp.list.all")) {
 						Integer page = 1;
 						if (args.length == 1) {
@@ -141,7 +141,7 @@ public class Commands implements CommandExecutor {
 						player.sendMessage(plugin.Util.parseColors("^redYou do not have permission to list warps."));
 					}
 				}
-				if (args[0].equals("mylist")) {
+				if (args[0].equalsIgnoreCase("mylist")) {
 					if (player.hasPermission("itemstowarp.list.own")) {
 						Integer page = 1;
 						if (args.length == 1) {
