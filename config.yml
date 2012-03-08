@@ -1,0 +1,22 @@
+########################
+# ItemstoWarp Settings #
+########################
+
+currency:
+  amount: 20          # Global Amount to warp
+  item: 331           # Material Id of the item to be used
+sign:
+  protected: true     # Should warp signs be protected from being removed (Warp owner can remove sign)
+
+#####################
+# Database Settings #
+#####################
+
+DB:
+  driver: 'org.sqlite.JDBC'
+  url: 'jdbc:sqlite:{DIR}{NAME}.db'
+  username: 'root'
+  password: ''
+  isolation: 'SERIALIZABLE'
+  logging: false
+  rebuild: false

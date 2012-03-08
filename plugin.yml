@@ -1,0 +1,57 @@
+name: ItemstoWarp
+version: 0.0.1
+description: This is a test plugin
+authors: [Muddr]
+main: com.gtdclan.itemstowarp.Main
+database: true
+
+commands:
+  itw:
+    description: Main command for ItemstoWarp.
+    permission: itemstowarp.itw
+    usage: Error! Type /<command> for help.
+
+    
+permissions:
+  itemstowarp.create:
+    description: Creates a warp.
+    default: true
+  itemstowarp.makeprivate:
+    description: Toggle their warp public/private.
+    default: true
+  itemstowarp.makeprivate.any:
+    description: Toggle any warp public/private.
+    default: false
+  itemstowarp.remove:
+    description: Removes your warp.
+    default: true
+  itemstowarp.remove.any:
+    description: Removes any warp.
+    default: false
+  itemstowarp.warp:
+    description: Warps player to non-private warps.
+    default: true
+  itemstowarp.warp.any:
+    description: Warps player to any warps.
+    default: false
+  itemstowarp.warp.nocost:
+    description: Bypasses warp fee.
+    default: false
+  itemstowarp.warp.sign:
+    description: Can warp using signs.
+    default: true
+  itemstowarp.warp.sign.create:
+    description: Can create warp signs.
+    default: true
+  itemstowarp.warp.sign.remove:
+    description: Can remove warp signs.
+    default: true
+  itemstowarp.list:
+    description: Can list non-private warps.
+    default: true
+  itemstowarp.list.own:
+    description: Can list own warps.
+    default: true
+  itemstowarp.list.all:
+    description: Can list all warps, should also have itemstowarp.warp.any.
+    default: false
