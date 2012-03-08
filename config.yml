@@ -3,13 +3,15 @@
 ########################
 
 currency:
-  amount: 20          # Global Amount to warp
-  item: 331           # Material Id of the item to be used
+  amount: 20          # Amount needed to warp.
+  item: 331           # Material Id of the item to be used for warping. (Default item 331 = Redstone)
 sign:
-  protected: true     # Should warp signs be protected from being removed (Warp owner can remove sign)
+  protected: true     # Should warp signs be protected from being removed. (Warp owner can remove sign)
 
 #####################
+#### Do Not Edit ####
 # Database Settings #
+#### Do Not Edit ####
 #####################
 
 DB:
