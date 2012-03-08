@@ -85,10 +85,10 @@ public class Listeners implements Listener {
 			Sign sign = (Sign) blockState;
 			String line0 = sign.getLine(0);
 			
-			if (line0.equalsIgnoreCase("[warp]")) {
+			if (line0.equalsIgnoreCase("[warp]") && plugin.signProtected) {
 				String line2 = sign.getLine(2);
 				Boolean isOwner = playerName.equals(line2);
-				Boolean hasPerm = player.hasPermission("itemstowarp.warp.sign.remove");
+				Boolean hasPerm = player.hasPermission("itemstowarp.warp.sign.removeany");
 				
 				if (!isOwner || !hasPerm) {
 					event.setCancelled(true);
