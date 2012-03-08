@@ -1,6 +1,6 @@
 name: ItemstoWarp
-version: 0.0.1
-description: This is a test plugin
+version: 1.0.0
+description: A pay to warp system
 authors: [Muddr]
 main: com.gtdclan.itemstowarp.Main
 database: true
@@ -8,29 +8,28 @@ database: true
 commands:
   itw:
     description: Main command for ItemstoWarp.
-    permission: itemstowarp.itw
     usage: Error! Type /<command> for help.
 
     
 permissions:
   itemstowarp.create:
     description: Creates a warp.
-    default: true
+    default: false
   itemstowarp.makeprivate:
     description: Toggle their warp public/private.
-    default: true
+    default: false
   itemstowarp.makeprivate.any:
     description: Toggle any warp public/private.
     default: false
   itemstowarp.remove:
     description: Removes your warp.
-    default: true
+    default: false
   itemstowarp.remove.any:
     description: Removes any warp.
     default: false
   itemstowarp.warp:
     description: Warps player to non-private warps.
-    default: true
+    default: false
   itemstowarp.warp.any:
     description: Warps player to any warps.
     default: false
@@ -39,19 +38,57 @@ permissions:
     default: false
   itemstowarp.warp.sign:
     description: Can warp using signs.
-    default: true
+    default: false
   itemstowarp.warp.sign.create:
     description: Can create warp signs.
-    default: true
+    default: false
   itemstowarp.warp.sign.remove:
     description: Can remove warp signs.
-    default: true
+    default: false
   itemstowarp.list:
     description: Can list non-private warps.
-    default: true
+    default: false
   itemstowarp.list.own:
     description: Can list own warps.
-    default: true
+    default: false
   itemstowarp.list.all:
     description: Can list all warps, should also have itemstowarp.warp.any.
     default: false
+  itemstowarp.user:
+    description: Includes all basic permissions.
+    children:
+      itemstowarp.create: true
+      itemstowarp.makeprivate: true
+      itemstowarp.remove: true
+      itemstowarp.warp: true
+      itemstowarp.warp.sign: true
+      itemstowarp.warp.sign.create: true
+      itemstowarp.list: true
+      itemstowarp.list.own: true
+  itemstowarp.admin:
+    description: Includes all admin permissions.
+    children:
+      itemstowarp.create: true
+      itemstowarp.makeprivate.any: true
+      itemstowarp.remove.any: true
+      itemstowarp.warp.any: true
+      itemstowarp.warp.sign: true
+      itemstowarp.warp.sign.create: true
+      itemstowarp.warp.sign.removeany: true
+      itemstowarp.list.all: true
+      itemstowarp.list.own: true
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
