@@ -13,7 +13,6 @@ import com.gtdclan.itemstowarp.UtilDatabase;
 
 public class Main extends JavaPlugin {
 	
-	// TODO: Plugin Desc.
 	public UtilDatabase database;
 	public Commands Commands = new Commands(this);
 	public Listeners Listener = new Listeners(this);
