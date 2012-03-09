@@ -31,7 +31,7 @@ permissions:
     description: Warps player to non-private warps.
     default: false
   itemstowarp.warp.any:
-    description: Warps player to any warps.
+    description: Warps player to any warps, should also have itemstowarp.list.all
     default: false
   itemstowarp.warp.nocost:
     description: Bypasses warp fee.
@@ -52,7 +52,7 @@ permissions:
     description: Can list own warps.
     default: false
   itemstowarp.list.all:
-    description: Can list all warps, should also have itemstowarp.warp.any.
+    description: Can list all warps, should also have itemstowarp.warp.any
     default: false
   itemstowarp.user:
     description: Includes all basic permissions.
@@ -77,18 +77,3 @@ permissions:
       itemstowarp.warp.sign.removeany: true
       itemstowarp.list.all: true
       itemstowarp.list.own: true
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
