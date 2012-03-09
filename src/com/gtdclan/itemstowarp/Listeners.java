@@ -90,7 +90,7 @@ public class Listeners implements Listener {
 				Boolean isOwner = playerName.equals(line2);
 				Boolean hasPerm = player.hasPermission("itemstowarp.warp.sign.removeany");
 				
-				if (!isOwner || !hasPerm) {
+				if (!isOwner && !hasPerm) {
 					event.setCancelled(true);
 					player.sendMessage(plugin.Util.parseColors("^redYou do not have permission to remove sign warps."));
 					sign.update();
