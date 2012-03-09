@@ -32,8 +32,6 @@ public class Main extends JavaPlugin {
 		
 		// Register commands.
 		getCommand("itw").setExecutor(Commands);
-		// TODO REMOVE ME
-		this.getServer().getWorld("world").setStorm(false);
 		// Load Config
 		Config.LoadConfig();
 		warpAmount = getConfig().getInt("currency.amount");
