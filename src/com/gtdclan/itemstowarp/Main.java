@@ -1,9 +1,12 @@
 package com.gtdclan.itemstowarp;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,6 +21,8 @@ public class Main extends JavaPlugin {
 	public Integer warpAmount;
 	public Integer warpItem;
 	public Warps Warps = new Warps(this);
+	public FileConfiguration yml_config;
+	public File yml_configFile;
 	
 	private void initializeDatabase() {
 		database = new UtilDatabase(this) {
@@ -30,20 +35,17 @@ public class Main extends JavaPlugin {
 			};
 		};
 		database.initializeDatabase(
-		    (String) Config.getProp("DB.driver"),
-		    (String) Config.getProp("DB.url"),
-		    (String) Config.getProp("DB.username"),
-		    (String) Config.getProp("DB.password"),
-		    (String) Config.getProp("DB.isolation"),
-		    (Boolean) Config.getProp("DB.logging"),
-		    (Boolean) Config.getProp("DB.rebuild"));
-		
-		Config.setProp("DB.rebuild", false);
+		    getConfig().getString("DB.driver"),
+		    getConfig().getString("DB.url"),
+		    getConfig().getString("DB.username"),
+		    getConfig().getString("DB.password"),
+		    getConfig().getString("DB.isolation"),
+		    getConfig().getBoolean("DB.logging"),
+		    getConfig().getBoolean("DB.rebuild"));
 	}
 	
 	@Override
 	public void onDisable() {
-		saveConfig();
 		Util.console("Plugin has been disabled.", Level.INFO);
 	}
 	
@@ -55,13 +57,19 @@ public class Main extends JavaPlugin {
 		
 		// Register commands.
 		getCommand("itw").setExecutor(Commands);
-		// Load Config
-		Config.LoadConfig();
+		
+		// Load config
+		yml_configFile = new File(getDataFolder(), "config.yml");
+		yml_config = new YamlConfiguration();
+		Config.firstRun();
+		Config.loadYamls();
+		
+		// Load settings from config
 		warpAmount = getConfig().getInt("currency.amount");
 		warpItem = getConfig().getInt("currency.item");
 		signProtected = getConfig().getBoolean("sign.protected");
 		
-		// Setup Database
+		// Setup database
 		initializeDatabase();
 		Util.console("Plugin has been enabled.", Level.INFO);
 	}

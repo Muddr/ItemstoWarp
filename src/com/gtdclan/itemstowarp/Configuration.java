@@ -1,52 +1,54 @@
 package com.gtdclan.itemstowarp;
 
-import java.util.logging.Level;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class Configuration {
 	
-	/** The plugin. */
 	private final Main plugin;
 	
-	/** The server configuration. */
-	org.bukkit.configuration.Configuration PluginConfig;
-	
-	/**
-	 * Hooks into the plugin.
-	 * 
-	 * @param instance
-	 *        The plugin instance.
-	 */
 	public Configuration(Main instance) {
 		plugin = instance;
 	}
 	
-	/**
-	 * Gets the prop.
-	 * 
-	 * @param key
-	 *        the key
-	 * @return the prop
+	/*
+	 * this copy(); method copies the specified file from your jar to your /plugins/<pluginName>/ folder
 	 */
-	public Object getProp(String key) {
-		return PluginConfig.get(key);
+	private void copy(InputStream in, File file) {
+		try {
+			OutputStream out = new FileOutputStream(file);
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = in.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+			out.close();
+			in.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	/**
-	 * Loads the plugin config file.
-	 */
-	public void LoadConfig() {
-		// plugin.reloadConfig();
-		// plugin.getConfig();
-		PluginConfig = plugin.getConfig().getDefaults();
-		plugin.getConfig().setDefaults(PluginConfig);
-		// plugin.saveConfig();
-		
-		plugin.Util.console("Loaded plugin config file.", Level.CONFIG);
+	public void firstRun() {
+		if (!plugin.yml_configFile.exists()) {                        // checks if the yaml does not exists
+			plugin.yml_configFile.getParentFile().mkdirs();         // creates the /plugins/<pluginName>/ directory if not found
+			copy(plugin.getResource("config.yml"), plugin.yml_configFile); // copies the yaml from your jar to the folder /plugin/<pluginName>
+		}
 	}
 	
-	public void setProp(String key, Object value) {
-		PluginConfig.set(key, value);
-		plugin.saveConfig();
-		
+	/*
+	 * in here, each of the FileConfigurations loaded the contents of yamls found at the /plugins/<pluginName>/*yml. needed at onEnable() after using firstRun(); can be called
+	 * anywhere if you need to reload the yamls.
+	 */
+	public void loadYamls() {
+		try {
+			plugin.yml_config.load(plugin.yml_configFile);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
