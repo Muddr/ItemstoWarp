@@ -20,7 +20,7 @@ public class Listeners implements Listener {
 	private final Main plugin;
 	
 	public Listeners(Main instance) {
-		plugin = instance;
+		this.plugin = instance;
 	}
 	
 	@EventHandler
@@ -33,14 +33,14 @@ public class Listeners implements Listener {
 			Sign sign = (Sign) blockState;
 			String line0 = sign.getLine(0);
 			
-			if (line0.equalsIgnoreCase("[warp]") && plugin.signProtected) {
+			if (line0.equalsIgnoreCase("[warp]") && this.plugin.signProtected) {
 				String line2 = sign.getLine(2);
 				Boolean isOwner = playerName.equals(line2);
 				Boolean hasPerm = player.hasPermission("itemstowarp.warp.sign.removeany");
 				
 				if (!isOwner && !hasPerm) {
 					event.setCancelled(true);
-					player.sendMessage(plugin.Util.parseColors("^redYou do not have permission to remove sign warps."));
+					player.sendMessage(this.plugin.Util.parseColors("^redYou do not have permission to remove sign warps."));
 					sign.update();
 				}
 			}
@@ -64,7 +64,7 @@ public class Listeners implements Listener {
 				}
 			}
 			else {
-				player.sendMessage(plugin.Util.parseColors("^redYou do not have permission to use sign warps."));
+				player.sendMessage(this.plugin.Util.parseColors("^redYou do not have permission to use sign warps."));
 			}
 		}
 	}
@@ -77,7 +77,7 @@ public class Listeners implements Listener {
 		String line3 = "";
 		if (line0.equalsIgnoreCase("[warp]")) {
 			if (player.hasPermission("itemstowarp.warp.sign.create")) {
-				DB data = plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", line1).findUnique();
+				DB data = this.plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", line1).findUnique();
 				if (data == null) {
 					player.sendMessage("^redError: Can't find warp.");
 					event.setCancelled(true);
@@ -93,7 +93,7 @@ public class Listeners implements Listener {
 				}
 			}
 			else {
-				player.sendMessage(plugin.Util.parseColors("^redYou do not have permission to create sign warps."));
+				player.sendMessage(this.plugin.Util.parseColors("^redYou do not have permission to create sign warps."));
 				event.setCancelled(true);
 			}
 		}

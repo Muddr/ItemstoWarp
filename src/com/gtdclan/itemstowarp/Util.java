@@ -23,7 +23,7 @@ public class Util {
 	private final Main plugin;
 	
 	public Util(Main instance) {
-		plugin = instance;
+		this.plugin = instance;
 	}
 	
 	/**
@@ -35,7 +35,7 @@ public class Util {
 	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#broadcast(String[]) broadcast(String[])
 	 */
 	public void broadcast(String message) {
-		plugin.getServer().broadcastMessage(parseColors(message));
+		this.plugin.getServer().broadcastMessage(this.parseColors(message));
 	}
 	
 	/**
@@ -48,7 +48,7 @@ public class Util {
 	 */
 	public void broadcast(String[] messages) {
 		for (String Message : messages) {
-			broadcast(Message);
+			this.broadcast(Message);
 		}
 	}
 	
@@ -62,7 +62,7 @@ public class Util {
 	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#console(String[]) console(String[])
 	 */
 	public void console(String message, Level level) {
-		minecraftLogger.log(level, "[" + plugin.getDescription().getName() + "] " + message);
+		this.minecraftLogger.log(level, "[" + this.plugin.getDescription().getName() + "] " + message);
 	}
 	
 	/**
@@ -76,17 +76,17 @@ public class Util {
 	 */
 	public void console(String[] messages, Level level) {
 		for (String Message : messages) {
-			console(Message, level);
+			this.console(Message, level);
 		}
 	}
 	
 	@SuppressWarnings("deprecation")
 	public Boolean hasAmount(String playerName) {
-		Player player = plugin.getServer().getPlayerExact(playerName);
+		Player player = this.plugin.getServer().getPlayerExact(playerName);
 		PlayerInventory playerInv = player.getInventory();
 		ItemStack[] playerItems = player.getInventory().getContents();
-		Material feeItem = Material.getMaterial(plugin.warpItem);
-		Integer feeAmount = plugin.warpAmount;
+		Material feeItem = Material.getMaterial(this.plugin.warpItem);
+		Integer feeAmount = this.plugin.warpAmount;
 		ItemStack fee = new ItemStack(feeItem, feeAmount);
 		Integer has = 0;
 		for (ItemStack item : playerItems) {
@@ -163,7 +163,7 @@ public class Util {
 		String[] newmessages = new String[amount];
 		for (int i = 0; i < amount; i++) {
 			
-			newmessages[i] = parseColors(messages[i]);
+			newmessages[i] = this.parseColors(messages[i]);
 		}
 		return newmessages;
 	}

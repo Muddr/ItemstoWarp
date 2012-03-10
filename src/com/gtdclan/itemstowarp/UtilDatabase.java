@@ -49,7 +49,7 @@ public abstract class UtilDatabase {
 			method.setAccessible(true);
 			
 			// Store the ClassLoader
-			classLoader = (ClassLoader) method.invoke(javaPlugin);
+			this.classLoader = (ClassLoader) method.invoke(javaPlugin);
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(
@@ -77,7 +77,7 @@ public abstract class UtilDatabase {
 		}
 		
 		// Retrieve the level of the root logger
-		loggerLevel = Logger.getLogger("").getLevel();
+		this.loggerLevel = Logger.getLogger("").getLevel();
 		
 		// Set the level of the root logger to OFF
 		Logger.getLogger("").setLevel(Level.OFF);
@@ -90,7 +90,7 @@ public abstract class UtilDatabase {
 		}
 		
 		// Set the level of the root logger back to the original value
-		Logger.getLogger("").setLevel(loggerLevel);
+		Logger.getLogger("").setLevel(this.loggerLevel);
 	}
 	
 	/**
@@ -99,7 +99,7 @@ public abstract class UtilDatabase {
 	 * @return EbeanServer Instance of the EbeanServer
 	 */
 	public EbeanServer getDatabase() {
-		return ebeanServer;
+		return this.ebeanServer;
 	}
 	
 	/**
@@ -134,16 +134,16 @@ public abstract class UtilDatabase {
 		// happens
 		try {
 			// Disable all logging
-			disableDatabaseLogging(logging);
+			this.disableDatabaseLogging(logging);
 			
 			// Prepare the database
-			prepareDatabase(driver, url, username, password, isolation);
+			this.prepareDatabase(driver, url, username, password, isolation);
 			
 			// Load the database
-			loadDatabase();
+			this.loadDatabase();
 			
 			// Create all tables
-			installDatabase(rebuild);
+			this.installDatabase(rebuild);
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(
@@ -152,7 +152,7 @@ public abstract class UtilDatabase {
 		}
 		finally {
 			// Enable all logging
-			enableDatabaseLogging(logging);
+			this.enableDatabaseLogging(logging);
 		}
 	}
 	
@@ -160,12 +160,12 @@ public abstract class UtilDatabase {
 		// Check if the database already (partially) exists
 		boolean databaseExists = false;
 		
-		List<Class<?>> classes = getDatabaseClasses();
+		List<Class<?>> classes = this.getDatabaseClasses();
 		for (int i = 0; i < classes.size(); i++) {
 			try {
 				// Do a simple query which only throws an exception if the table
 				// does not exist
-				ebeanServer.find(classes.get(i)).findRowCount();
+				this.ebeanServer.find(classes.get(i)).findRowCount();
 				
 				// Query passed without throwing an exception, a database
 				// therefore already exists
@@ -183,12 +183,12 @@ public abstract class UtilDatabase {
 		}
 		
 		// Create a DDL generator
-		SpiEbeanServer serv = (SpiEbeanServer) ebeanServer;
+		SpiEbeanServer serv = (SpiEbeanServer) this.ebeanServer;
 		DdlGenerator gen = serv.getDdlGenerator();
 		
 		// Fire "before drop" event
 		try {
-			beforeDropDatabase();
+			this.beforeDropDatabase();
 		}
 		catch (Exception ex) {
 			// If the database exists, dropping has to be canceled to prevent
@@ -205,17 +205,17 @@ public abstract class UtilDatabase {
 		
 		// If SQLite is being used, the database has to reloaded to release all
 		// resources
-		if (usingSQLite) {
-			loadDatabase();
+		if (this.usingSQLite) {
+			this.loadDatabase();
 		}
 		
 		// Generate a CreateDDL-script
-		if (usingSQLite) {
+		if (this.usingSQLite) {
 			// If SQLite is being used, the CreateDLL-script has to be validated
 			// and potentially fixed to be valid
 			gen.runScript(
 			    false,
-			    validateCreateDDLSqlite(gen.generateCreateDdl()));
+			    this.validateCreateDDLSqlite(gen.generateCreateDdl()));
 		}
 		else {
 			gen.runScript(false, gen.generateCreateDdl());
@@ -223,7 +223,7 @@ public abstract class UtilDatabase {
 		
 		// Fire "after create" event
 		try {
-			afterCreateDatabase();
+			this.afterCreateDatabase();
 		}
 		catch (Exception ex) {
 			throw new RuntimeException("An unexpected exception occured", ex);
@@ -241,7 +241,7 @@ public abstract class UtilDatabase {
 			currentClassLoader = Thread.currentThread().getContextClassLoader();
 			
 			// Set the ClassLoader to Plugin ClassLoader
-			Thread.currentThread().setContextClassLoader(classLoader);
+			Thread.currentThread().setContextClassLoader(this.classLoader);
 			
 			// Get a reference to the private static "defaultUseCaches"-field in
 			// URLConnection
@@ -253,7 +253,7 @@ public abstract class UtilDatabase {
 			cacheField.setBoolean(null, false);
 			
 			// Setup Ebean based on the configuration
-			ebeanServer = EbeanServerFactory.create(serverConfig);
+			this.ebeanServer = EbeanServerFactory.create(this.serverConfig);
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(
@@ -283,7 +283,7 @@ public abstract class UtilDatabase {
 		// Setup the data source
 		DataSourceConfig ds = new DataSourceConfig();
 		ds.setDriver(driver);
-		ds.setUrl(replaceDatabaseString(url));
+		ds.setUrl(this.replaceDatabaseString(url));
 		ds.setUsername(username);
 		ds.setPassword(password);
 		ds.setIsolationLevel(TransactionIsolation.getLevel(isolation));
@@ -295,7 +295,7 @@ public abstract class UtilDatabase {
 		sc.setName(ds.getUrl().replaceAll("[^a-zA-Z0-9]", ""));
 		
 		// Get all persistent classes
-		List<Class<?>> classes = getDatabaseClasses();
+		List<Class<?>> classes = this.getDatabaseClasses();
 		
 		// Do a sanity check first
 		if (classes.size() == 0) {
@@ -310,20 +310,20 @@ public abstract class UtilDatabase {
 		// Check if the SQLite JDBC supplied with Bukkit is being used
 		if (ds.getDriver().equalsIgnoreCase("org.sqlite.JDBC")) {
 			// Remember the database is a SQLite-database
-			usingSQLite = true;
+			this.usingSQLite = true;
 			
 			// Modify the platform, as SQLite has no AUTO_INCREMENT field
 			sc.setDatabasePlatform(new SQLitePlatform());
 			sc.getDatabasePlatform().getDbDdlSyntax().setIdentity("");
 		}
 		
-		prepareDatabaseAdditionalConfig(ds, sc);
+		this.prepareDatabaseAdditionalConfig(ds, sc);
 		
 		// Finally the data source
 		sc.setDataSourceConfig(ds);
 		
 		// Store the ServerConfig
-		serverConfig = sc;
+		this.serverConfig = sc;
 	}
 	
 	/**
@@ -338,10 +338,10 @@ public abstract class UtilDatabase {
 	private String replaceDatabaseString(String input) {
 		input = input.replaceAll(
 		    "\\{DIR\\}",
-		    javaPlugin.getDataFolder().getPath().replaceAll("\\\\", "/") + "/");
+		    this.javaPlugin.getDataFolder().getPath().replaceAll("\\\\", "/") + "/");
 		input = input.replaceAll(
 		    "\\{NAME\\}",
-		    javaPlugin.getDescription().getName().replaceAll("[^\\w_-]", ""));
+		    this.javaPlugin.getDescription().getName().replaceAll("[^\\w_-]", ""));
 		
 		return input;
 	}

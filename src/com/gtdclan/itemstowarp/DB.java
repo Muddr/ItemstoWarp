@@ -28,35 +28,35 @@ public class DB {
 	private int Warpz;
 	
 	public int getId() {
-		return id;
+		return this.id;
 	}
 	
 	public Boolean getIsprivate() {
-		return Isprivate;
+		return this.Isprivate;
 	}
 	
 	public String getPlayername() {
-		return Playername;
+		return this.Playername;
 	}
 	
 	public String getWarpname() {
-		return Warpname;
+		return this.Warpname;
 	}
 	
 	public String getWarpworld() {
-		return Warpworld;
+		return this.Warpworld;
 	}
 	
 	public int getWarpx() {
-		return Warpx;
+		return this.Warpx;
 	}
 	
 	public int getWarpy() {
-		return Warpy;
+		return this.Warpy;
 	}
 	
 	public int getWarpz() {
-		return Warpz;
+		return this.Warpz;
 	}
 	
 	public void setId(int id) {

@@ -14,12 +14,12 @@ public class Warps {
 	private final Main plugin;
 	
 	public Warps(Main instance) {
-		plugin = instance;
+		this.plugin = instance;
 	}
 	
 	public void createWarp(String playerName, Location playerloc, String warpName) {
 		String[] messages;
-		DB data = plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
+		DB data = this.plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
 		if (data == null) {
 			data = new DB();
 			data.setIsprivate(false);
@@ -29,7 +29,7 @@ public class Warps {
 			data.setWarpy(playerloc.getBlockY());
 			data.setWarpz(playerloc.getBlockZ());
 			data.setWarpname(warpName);
-			plugin.database.getDatabase().save(data);
+			this.plugin.database.getDatabase().save(data);
 			messages = new String[] {
 			    "Warp created with name: " + warpName,
 			    "To make warp private, Use /itw toggle " + warpName
@@ -42,34 +42,34 @@ public class Warps {
 			};
 			
 		}
-		Player player = plugin.getServer().getPlayerExact(playerName);
-		player.sendMessage(plugin.Util.parseColors(messages));
+		Player player = this.plugin.getServer().getPlayerExact(playerName);
+		player.sendMessage(this.plugin.Util.parseColors(messages));
 	}
 	
 	public void removeWarp(String playerName, String warpName) {
-		DB data = plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
-		Player player = plugin.getServer().getPlayerExact(playerName);
+		DB data = this.plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
+		Player player = this.plugin.getServer().getPlayerExact(playerName);
 		if (data == null) {
-			player.sendMessage(plugin.Util.parseColors("Can not find warp with name: " + warpName));
+			player.sendMessage(this.plugin.Util.parseColors("Can not find warp with name: " + warpName));
 		}
 		else {
 			Boolean isWarpCreator = playerName.equals(data.getPlayername());
 			Boolean hasPerm = player.hasPermission("itemstowarp.remove.any");
 			if (isWarpCreator || hasPerm) {
-				plugin.database.getDatabase().delete(data);
-				player.sendMessage(plugin.Util.parseColors("Warp " + warpName + " has be removed."));
+				this.plugin.database.getDatabase().delete(data);
+				player.sendMessage(this.plugin.Util.parseColors("Warp " + warpName + " has be removed."));
 			}
 			else {
-				player.sendMessage(plugin.Util.parseColors("You can not delete a warp that you don't own."));
+				player.sendMessage(this.plugin.Util.parseColors("You can not delete a warp that you don't own."));
 			}
 		}
 	}
 	
 	public void togglePrivate(String playerName, String warpName) {
-		DB data = plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
-		Player player = plugin.getServer().getPlayerExact(playerName);
+		DB data = this.plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
+		Player player = this.plugin.getServer().getPlayerExact(playerName);
 		if (data == null) {
-			player.sendMessage(plugin.Util.parseColors("Can not find warp with name: " + warpName));
+			player.sendMessage(this.plugin.Util.parseColors("Can not find warp with name: " + warpName));
 		}
 		else {
 			Boolean isWarpCreator = playerName.equals(data.getPlayername());
@@ -77,15 +77,15 @@ public class Warps {
 			Boolean status = data.getIsprivate();
 			if (isWarpCreator || hasPerm) {
 				data.setIsprivate(!status);
-				plugin.database.getDatabase().save(data);
+				this.plugin.database.getDatabase().save(data);
 				String wasstatus = (status ? "private" : "public");
 				String isstatus = (status ? "public" : "private");
-				player.sendMessage(plugin.Util.parseColors("Warp " + warpName + " is now " + isstatus));
-				player.sendMessage(plugin.Util.parseColors("Use /itw toggle " + warpName + " to make it " + wasstatus));
+				player.sendMessage(this.plugin.Util.parseColors("Warp " + warpName + " is now " + isstatus));
+				player.sendMessage(this.plugin.Util.parseColors("Use /itw toggle " + warpName + " to make it " + wasstatus));
 				
 			}
 			else {
-				player.sendMessage(plugin.Util.parseColors("You can not toggle a warp that you don't own."));
+				player.sendMessage(this.plugin.Util.parseColors("You can not toggle a warp that you don't own."));
 			}
 		}
 	}
@@ -94,14 +94,14 @@ public class Warps {
 		Integer max = 9;
 		int pagestart = (page - 1) * max;
 		int pageend = (pagestart + max);
-		Player player = plugin.getServer().getPlayerExact(playerName);
+		Player player = this.plugin.getServer().getPlayerExact(playerName);
 		Boolean seeAll = player.hasPermission("itemstowarp.list.all");
 		Query<DB> data;
 		if (seeAll) {
-			data = plugin.database.getDatabase().find(DB.class).where().gt("id", 0).orderBy("Warpname");
+			data = this.plugin.database.getDatabase().find(DB.class).where().gt("id", 0).orderBy("Warpname");
 		}
 		else {
-			data = plugin.database.getDatabase().find(DB.class).where().eq("Isprivate", false).orderBy("Warpname");
+			data = this.plugin.database.getDatabase().find(DB.class).where().eq("Isprivate", false).orderBy("Warpname");
 		}
 		int warpCount = data.findRowCount();
 		if (data != null && warpCount > 0) {
@@ -125,7 +125,7 @@ public class Warps {
 				if (isPrivate) {
 					color = "^red";
 				}
-				player.sendMessage(plugin.Util.parseColors(color + warpName + " | " + ownerName + " | " + world + ":" + x + "," + y + "," + z));
+				player.sendMessage(this.plugin.Util.parseColors(color + warpName + " | " + ownerName + " | " + world + ":" + x + "," + y + "," + z));
 			}
 		}
 		else {
@@ -137,8 +137,8 @@ public class Warps {
 		Integer max = 9;
 		int pagestart = (page - 1) * max;
 		int pageend = (pagestart + max);
-		Player player = plugin.getServer().getPlayerExact(playerName);
-		Query<DB> data = plugin.database.getDatabase().find(DB.class).where().eq("PlayerName", playerName).orderBy("Warpname");
+		Player player = this.plugin.getServer().getPlayerExact(playerName);
+		Query<DB> data = this.plugin.database.getDatabase().find(DB.class).where().eq("PlayerName", playerName).orderBy("Warpname");
 		int warpCount = data.findRowCount();
 		if (data != null && warpCount > 0) {
 			
@@ -161,7 +161,7 @@ public class Warps {
 				if (isPrivate) {
 					color = "^red";
 				}
-				player.sendMessage(plugin.Util.parseColors(color + warpName + " | " + ownerName + " | " + world + ":" + x + "," + y + "," + z));
+				player.sendMessage(this.plugin.Util.parseColors(color + warpName + " | " + ownerName + " | " + world + ":" + x + "," + y + "," + z));
 			}
 		}
 		else {
@@ -170,10 +170,10 @@ public class Warps {
 	}
 	
 	public void warpPlayer(String playerName, String warpName) {
-		DB data = plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
-		Player player = plugin.getServer().getPlayerExact(playerName);
+		DB data = this.plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
+		Player player = this.plugin.getServer().getPlayerExact(playerName);
 		if (data == null) {
-			player.sendMessage(plugin.Util.parseColors("Can not find warp with name: " + warpName));
+			player.sendMessage(this.plugin.Util.parseColors("Can not find warp with name: " + warpName));
 		}
 		else {
 			Boolean isWarpCreator = playerName.equals(data.getPlayername());
@@ -182,9 +182,9 @@ public class Warps {
 			Boolean nocost = player.hasPermission("itemstowarp.warp.nocost");
 			
 			if (isWarpCreator || isPublic || hasPerm) {
-				Boolean charged = plugin.Util.hasAmount(playerName);
+				Boolean charged = this.plugin.Util.hasAmount(playerName);
 				if (charged || nocost) {
-					World warpWorld = plugin.getServer().getWorld(data.getWarpworld());
+					World warpWorld = this.plugin.getServer().getWorld(data.getWarpworld());
 					int warpx = data.getWarpx();
 					int warpy = data.getWarpy() + 1;
 					int warpz = data.getWarpz();
@@ -192,11 +192,11 @@ public class Warps {
 					player.teleport(warpLoc);
 				}
 				else {
-					player.sendMessage(plugin.Util.parseColors("Sorry. You can't afford to warp."));
+					player.sendMessage(this.plugin.Util.parseColors("Sorry. You can't afford to warp."));
 				}
 			}
 			else {
-				player.sendMessage(plugin.Util.parseColors("Sorry. This warp is private."));
+				player.sendMessage(this.plugin.Util.parseColors("Sorry. This warp is private."));
 			}
 		}
 	}
