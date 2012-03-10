@@ -1,13 +1,11 @@
-# ItemstoWarp Settings
+# Visit http://dev.bukkit.org/server-mods/itemstowarp/ for more info.
 currency:
-  amount: 20         # Amount needed to warp.
-  item: 331          # Material Id of the item to be used for warping. (Default item 331 = Redstone)
+  amount: 20
+  item: 331
 
 sign:
-  protected: true    # Should warp signs be protected from being removed. (Warp owner can remove sign)
+  protected: true
 
-# Database Settings
-# Do Not Edit
 DB:
   driver: 'org.sqlite.JDBC'
   url: 'jdbc:sqlite:{DIR}{NAME}.db'

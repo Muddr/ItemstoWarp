@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -25,7 +24,8 @@ public class Main extends JavaPlugin {
 	public File yml_configFile;
 	
 	private void initializeDatabase() {
-		database = new UtilDatabase(this) {
+		// Configuration config = Config.LoadConfig();
+		this.database = new UtilDatabase(this) {
 			
 			@Override
 			protected java.util.List<Class<?>> getDatabaseClasses() {
@@ -34,43 +34,40 @@ public class Main extends JavaPlugin {
 				return list;
 			};
 		};
-		database.initializeDatabase(
-		    getConfig().getString("DB.driver"),
-		    getConfig().getString("DB.url"),
-		    getConfig().getString("DB.username"),
-		    getConfig().getString("DB.password"),
-		    getConfig().getString("DB.isolation"),
-		    getConfig().getBoolean("DB.logging"),
-		    getConfig().getBoolean("DB.rebuild"));
+		this.database.initializeDatabase(
+		    (String) this.Config.getProp("DB.driver"),
+		    (String) this.Config.getProp("DB.url"),
+		    (String) this.Config.getProp("DB.username"),
+		    (String) this.Config.getProp("DB.password"),
+		    (String) this.Config.getProp("DB.isolation"),
+		    (Boolean) this.Config.getProp("DB.logging"),
+		    (Boolean) this.Config.getProp("DB.rebuild"));
+		
+		this.Config.setProp("DB.rebuild", false);
 	}
 	
 	@Override
 	public void onDisable() {
-		Util.console("Plugin has been disabled.", Level.INFO);
+		this.Util.console("Plugin has been disabled.", Level.INFO);
 	}
 	
 	@Override
 	public void onEnable() {
 		// Register events.
-		PluginManager PluginManager = getServer().getPluginManager();
-		PluginManager.registerEvents(Listener, this);
+		PluginManager PluginManager = this.getServer().getPluginManager();
+		PluginManager.registerEvents(this.Listener, this);
 		
 		// Register commands.
-		getCommand("itw").setExecutor(Commands);
+		this.getCommand("itw").setExecutor(this.Commands);
 		
-		// Load config
-		yml_configFile = new File(getDataFolder(), "config.yml");
-		yml_config = new YamlConfiguration();
-		Config.firstRun();
-		Config.loadYamls();
-		
-		// Load settings from config
-		warpAmount = getConfig().getInt("currency.amount");
-		warpItem = getConfig().getInt("currency.item");
-		signProtected = getConfig().getBoolean("sign.protected");
+		// Load Config
+		this.Config.LoadConfig();
+		this.warpAmount = this.getConfig().getInt("currency.amount");
+		this.warpItem = this.getConfig().getInt("currency.item");
+		this.signProtected = this.getConfig().getBoolean("sign.protected");
 		
 		// Setup database
-		initializeDatabase();
-		Util.console("Plugin has been enabled.", Level.INFO);
+		this.initializeDatabase();
+		this.Util.console("Plugin has been enabled.", Level.INFO);
 	}
 }
