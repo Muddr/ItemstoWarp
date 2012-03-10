@@ -7,21 +7,45 @@ import java.util.logging.Level;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.gtdclan.itemstowarp.Configuration;
-import com.gtdclan.itemstowarp.DB;
-import com.gtdclan.itemstowarp.UtilDatabase;
-
 public class Main extends JavaPlugin {
 	
-	public UtilDatabase database;
 	public Commands Commands = new Commands(this);
-	public Listeners Listener = new Listeners(this);
 	public Configuration Config = new Configuration(this);
+	public UtilDatabase database;
+	public Listeners Listener = new Listeners(this);
+	public Boolean signProtected;
 	public Util Util = new Util(this);
-	public Warps Warps = new Warps(this);
 	public Integer warpAmount;
 	public Integer warpItem;
-	public Boolean signProtected;
+	public Warps Warps = new Warps(this);
+	
+	private void initializeDatabase() {
+		database = new UtilDatabase(this) {
+			
+			@Override
+			protected java.util.List<Class<?>> getDatabaseClasses() {
+				List<Class<?>> list = new ArrayList<Class<?>>();
+				list.add(DB.class);
+				return list;
+			};
+		};
+		database.initializeDatabase(
+		    (String) Config.getProp("DB.driver"),
+		    (String) Config.getProp("DB.url"),
+		    (String) Config.getProp("DB.username"),
+		    (String) Config.getProp("DB.password"),
+		    (String) Config.getProp("DB.isolation"),
+		    (Boolean) Config.getProp("DB.logging"),
+		    (Boolean) Config.getProp("DB.rebuild"));
+		
+		Config.setProp("DB.rebuild", false);
+	}
+	
+	@Override
+	public void onDisable() {
+		saveConfig();
+		Util.console("Plugin has been disabled.", Level.INFO);
+	}
 	
 	@Override
 	public void onEnable() {
@@ -40,30 +64,5 @@ public class Main extends JavaPlugin {
 		// Setup Database
 		initializeDatabase();
 		Util.console("Plugin has been enabled.", Level.INFO);
-	}
-	
-	public void onDisable() {
-		Util.console("Plugin has been disabled.", Level.INFO);
-	}
-	
-	private void initializeDatabase() {
-		database = new UtilDatabase(this) {
-			
-			protected java.util.List<Class<?>> getDatabaseClasses() {
-				List<Class<?>> list = new ArrayList<Class<?>>();
-				list.add(DB.class);
-				return list;
-			};
-		};
-		database.initializeDatabase(
-		    (String) Config.getProp("DB.driver"),
-		    (String) Config.getProp("DB.url"),
-		    (String) Config.getProp("DB.username"),
-		    (String) Config.getProp("DB.password"),
-		    (String) Config.getProp("DB.isolation"),
-		    (Boolean) Config.getProp("DB.logging"),
-		    (Boolean) Config.getProp("DB.rebuild"));
-		
-		Config.setProp("DB.rebuild", false);
 	}
 }

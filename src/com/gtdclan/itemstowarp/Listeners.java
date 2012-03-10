@@ -3,6 +3,7 @@ package com.gtdclan.itemstowarp;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,17 +11,40 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.block.Sign;
 
 /**
  * The Class Listeners.
  */
 public class Listeners implements Listener {
 	
-	private Main plugin;
+	private final Main plugin;
 	
 	public Listeners(Main instance) {
 		plugin = instance;
+	}
+	
+	@EventHandler
+	public void onBlockBreak(BlockBreakEvent event) {
+		Player player = event.getPlayer();
+		String playerName = player.getName();
+		Block block = event.getBlock();
+		if (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST) {
+			BlockState blockState = block.getState();
+			Sign sign = (Sign) blockState;
+			String line0 = sign.getLine(0);
+			
+			if (line0.equalsIgnoreCase("[warp]") && plugin.signProtected) {
+				String line2 = sign.getLine(2);
+				Boolean isOwner = playerName.equals(line2);
+				Boolean hasPerm = player.hasPermission("itemstowarp.warp.sign.removeany");
+				
+				if (!isOwner && !hasPerm) {
+					event.setCancelled(true);
+					player.sendMessage(plugin.Util.parseColors("^redYou do not have permission to remove sign warps."));
+					sign.update();
+				}
+			}
+		}
 	}
 	
 	@EventHandler
@@ -71,30 +95,6 @@ public class Listeners implements Listener {
 			else {
 				player.sendMessage(plugin.Util.parseColors("^redYou do not have permission to create sign warps."));
 				event.setCancelled(true);
-			}
-		}
-	}
-	
-	@EventHandler
-	public void onBlockBreak(BlockBreakEvent event) {
-		Player player = event.getPlayer();
-		String playerName = player.getName();
-		Block block = event.getBlock();
-		if (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST) {
-			BlockState blockState = block.getState();
-			Sign sign = (Sign) blockState;
-			String line0 = sign.getLine(0);
-			
-			if (line0.equalsIgnoreCase("[warp]") && plugin.signProtected) {
-				String line2 = sign.getLine(2);
-				Boolean isOwner = playerName.equals(line2);
-				Boolean hasPerm = player.hasPermission("itemstowarp.warp.sign.removeany");
-				
-				if (!isOwner && !hasPerm) {
-					event.setCancelled(true);
-					player.sendMessage(plugin.Util.parseColors("^redYou do not have permission to remove sign warps."));
-					sign.update();
-				}
 			}
 		}
 	}

@@ -9,13 +9,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class Commands implements CommandExecutor {
-
-	private Main plugin;
+	
+	private final Main plugin;
 	
 	public Commands(Main instance) {
 		plugin = instance;
 	}
-
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command senderCommand, String label, String[] args) {
 		Player player = null;
@@ -35,9 +35,9 @@ public class Commands implements CommandExecutor {
 		
 		// itw Command
 		if (command.equals("itw")) {
-			if (player != null) {//Make sure it's a player
-				if (args.length == 0) { //if no args, display usage message
-					
+			if (player != null) {// Make sure it's a player
+				if (args.length == 0) { // if no args, display usage message
+				
 					String[] messages = new String[] {
 					    "^redCommands:",
 					    "  ^gray/itw create <name>^white : Creates a warp at your location.",
@@ -50,7 +50,7 @@ public class Commands implements CommandExecutor {
 					player.sendMessage(plugin.Util.parseColors(messages));
 					return true;
 				}
-				//itw create Command
+				// itw create Command
 				if (args[0].equalsIgnoreCase("create")) {
 					if (player.hasPermission("itemstowarp.create")) {
 						if (args.length == 1) {

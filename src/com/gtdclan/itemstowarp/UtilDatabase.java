@@ -24,12 +24,12 @@ import com.avaje.ebeaninternal.server.lib.sql.TransactionIsolation;
 
 public abstract class UtilDatabase {
 	
-	private JavaPlugin javaPlugin;
 	private ClassLoader classLoader;
-	private Level loggerLevel;
-	private boolean usingSQLite;
-	private ServerConfig serverConfig;
 	private EbeanServer ebeanServer;
+	private final JavaPlugin javaPlugin;
+	private Level loggerLevel;
+	private ServerConfig serverConfig;
+	private boolean usingSQLite;
 	
 	/**
 	 * Hooks into the plugin.
@@ -49,13 +49,66 @@ public abstract class UtilDatabase {
 			method.setAccessible(true);
 			
 			// Store the ClassLoader
-			this.classLoader = (ClassLoader) method.invoke(javaPlugin);
+			classLoader = (ClassLoader) method.invoke(javaPlugin);
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(
 			    "Failed to retrieve the ClassLoader of the plugin using Reflection",
 			    ex);
 		}
+	}
+	
+	/**
+	 * Method called after the loaded database has been created
+	 */
+	protected void afterCreateDatabase() {
+	}
+	
+	/**
+	 * Method called before the loaded database is being dropped
+	 */
+	protected void beforeDropDatabase() {
+	}
+	
+	private void disableDatabaseLogging(boolean logging) {
+		// If logging is allowed, nothing has to be changed
+		if (logging) {
+			return;
+		}
+		
+		// Retrieve the level of the root logger
+		loggerLevel = Logger.getLogger("").getLevel();
+		
+		// Set the level of the root logger to OFF
+		Logger.getLogger("").setLevel(Level.OFF);
+	}
+	
+	private void enableDatabaseLogging(boolean logging) {
+		// If logging is allowed, nothing has to be changed
+		if (logging) {
+			return;
+		}
+		
+		// Set the level of the root logger back to the original value
+		Logger.getLogger("").setLevel(loggerLevel);
+	}
+	
+	/**
+	 * Get the instance of the EbeanServer
+	 * 
+	 * @return EbeanServer Instance of the EbeanServer
+	 */
+	public EbeanServer getDatabase() {
+		return ebeanServer;
+	}
+	
+	/**
+	 * Get a list of classes which should be registered with the EbeanServer
+	 * 
+	 * @return List List of classes which should be registered with the EbeanServer
+	 */
+	protected List<Class<?>> getDatabaseClasses() {
+		return new ArrayList<Class<?>>();
 	}
 	
 	/**
@@ -100,102 +153,6 @@ public abstract class UtilDatabase {
 		finally {
 			// Enable all logging
 			enableDatabaseLogging(logging);
-		}
-	}
-	
-	private void prepareDatabase(String driver, String url, String username, String password, String isolation) {
-		// Setup the data source
-		DataSourceConfig ds = new DataSourceConfig();
-		ds.setDriver(driver);
-		ds.setUrl(replaceDatabaseString(url));
-		ds.setUsername(username);
-		ds.setPassword(password);
-		ds.setIsolationLevel(TransactionIsolation.getLevel(isolation));
-		
-		// Setup the server configuration
-		ServerConfig sc = new ServerConfig();
-		sc.setDefaultServer(false);
-		sc.setRegister(false);
-		sc.setName(ds.getUrl().replaceAll("[^a-zA-Z0-9]", ""));
-		
-		// Get all persistent classes
-		List<Class<?>> classes = getDatabaseClasses();
-		
-		// Do a sanity check first
-		if (classes.size() == 0) {
-			// Exception: There is no use in continuing to load this database
-			throw new RuntimeException(
-			    "Database has been enabled, but no classes are registered to it");
-		}
-		
-		// Register them with the EbeanServer
-		sc.setClasses(classes);
-		
-		// Check if the SQLite JDBC supplied with Bukkit is being used
-		if (ds.getDriver().equalsIgnoreCase("org.sqlite.JDBC")) {
-			// Remember the database is a SQLite-database
-			usingSQLite = true;
-			
-			// Modify the platform, as SQLite has no AUTO_INCREMENT field
-			sc.setDatabasePlatform(new SQLitePlatform());
-			sc.getDatabasePlatform().getDbDdlSyntax().setIdentity("");
-		}
-		
-		prepareDatabaseAdditionalConfig(ds, sc);
-		
-		// Finally the data source
-		sc.setDataSourceConfig(ds);
-		
-		// Store the ServerConfig
-		serverConfig = sc;
-	}
-	
-	private void loadDatabase() {
-		// Declare a few local variables for later use
-		ClassLoader currentClassLoader = null;
-		Field cacheField = null;
-		boolean cacheValue = true;
-		
-		try {
-			// Store the current ClassLoader, so it can be reverted later
-			currentClassLoader = Thread.currentThread().getContextClassLoader();
-			
-			// Set the ClassLoader to Plugin ClassLoader
-			Thread.currentThread().setContextClassLoader(classLoader);
-			
-			// Get a reference to the private static "defaultUseCaches"-field in
-			// URLConnection
-			cacheField = URLConnection.class.getDeclaredField("defaultUseCaches");
-			
-			// Make it accessible, store the default value and set it to false
-			cacheField.setAccessible(true);
-			cacheValue = cacheField.getBoolean(null);
-			cacheField.setBoolean(null, false);
-			
-			// Setup Ebean based on the configuration
-			ebeanServer = EbeanServerFactory.create(serverConfig);
-		}
-		catch (Exception ex) {
-			throw new RuntimeException(
-			    "Failed to create a new instance of the EbeanServer",
-			    ex);
-		}
-		finally {
-			// Revert the ClassLoader back to its original value
-			if (currentClassLoader != null) {
-				Thread.currentThread().setContextClassLoader(currentClassLoader);
-			}
-			
-			// Revert the "defaultUseCaches"-field in URLConnection back to its
-			// original value
-			try {
-				if (cacheField != null) {
-					cacheField.setBoolean(null, cacheValue);
-				}
-			}
-			catch (Exception e) {
-				System.out.println("Failed to revert the \"defaultUseCaches\"-field back to its original value, URLConnection-caching remains disabled.");
-			}
 		}
 	}
 	
@@ -271,6 +228,111 @@ public abstract class UtilDatabase {
 		catch (Exception ex) {
 			throw new RuntimeException("An unexpected exception occured", ex);
 		}
+	}
+	
+	private void loadDatabase() {
+		// Declare a few local variables for later use
+		ClassLoader currentClassLoader = null;
+		Field cacheField = null;
+		boolean cacheValue = true;
+		
+		try {
+			// Store the current ClassLoader, so it can be reverted later
+			currentClassLoader = Thread.currentThread().getContextClassLoader();
+			
+			// Set the ClassLoader to Plugin ClassLoader
+			Thread.currentThread().setContextClassLoader(classLoader);
+			
+			// Get a reference to the private static "defaultUseCaches"-field in
+			// URLConnection
+			cacheField = URLConnection.class.getDeclaredField("defaultUseCaches");
+			
+			// Make it accessible, store the default value and set it to false
+			cacheField.setAccessible(true);
+			cacheValue = cacheField.getBoolean(null);
+			cacheField.setBoolean(null, false);
+			
+			// Setup Ebean based on the configuration
+			ebeanServer = EbeanServerFactory.create(serverConfig);
+		}
+		catch (Exception ex) {
+			throw new RuntimeException(
+			    "Failed to create a new instance of the EbeanServer",
+			    ex);
+		}
+		finally {
+			// Revert the ClassLoader back to its original value
+			if (currentClassLoader != null) {
+				Thread.currentThread().setContextClassLoader(currentClassLoader);
+			}
+			
+			// Revert the "defaultUseCaches"-field in URLConnection back to its
+			// original value
+			try {
+				if (cacheField != null) {
+					cacheField.setBoolean(null, cacheValue);
+				}
+			}
+			catch (Exception e) {
+				System.out.println("Failed to revert the \"defaultUseCaches\"-field back to its original value, URLConnection-caching remains disabled.");
+			}
+		}
+	}
+	
+	private void prepareDatabase(String driver, String url, String username, String password, String isolation) {
+		// Setup the data source
+		DataSourceConfig ds = new DataSourceConfig();
+		ds.setDriver(driver);
+		ds.setUrl(replaceDatabaseString(url));
+		ds.setUsername(username);
+		ds.setPassword(password);
+		ds.setIsolationLevel(TransactionIsolation.getLevel(isolation));
+		
+		// Setup the server configuration
+		ServerConfig sc = new ServerConfig();
+		sc.setDefaultServer(false);
+		sc.setRegister(false);
+		sc.setName(ds.getUrl().replaceAll("[^a-zA-Z0-9]", ""));
+		
+		// Get all persistent classes
+		List<Class<?>> classes = getDatabaseClasses();
+		
+		// Do a sanity check first
+		if (classes.size() == 0) {
+			// Exception: There is no use in continuing to load this database
+			throw new RuntimeException(
+			    "Database has been enabled, but no classes are registered to it");
+		}
+		
+		// Register them with the EbeanServer
+		sc.setClasses(classes);
+		
+		// Check if the SQLite JDBC supplied with Bukkit is being used
+		if (ds.getDriver().equalsIgnoreCase("org.sqlite.JDBC")) {
+			// Remember the database is a SQLite-database
+			usingSQLite = true;
+			
+			// Modify the platform, as SQLite has no AUTO_INCREMENT field
+			sc.setDatabasePlatform(new SQLitePlatform());
+			sc.getDatabasePlatform().getDbDdlSyntax().setIdentity("");
+		}
+		
+		prepareDatabaseAdditionalConfig(ds, sc);
+		
+		// Finally the data source
+		sc.setDataSourceConfig(ds);
+		
+		// Store the ServerConfig
+		serverConfig = sc;
+	}
+	
+	/**
+	 * Method called near the end of prepareDatabase, before the dataSourceConfig is attached to the serverConfig.
+	 * 
+	 * @param dataSourceConfig
+	 * @param serverConfig
+	 */
+	protected void prepareDatabaseAdditionalConfig(DataSourceConfig dataSourceConfig, ServerConfig serverConfig) {
 	}
 	
 	private String replaceDatabaseString(String input) {
@@ -403,67 +465,5 @@ public abstract class UtilDatabase {
 			    "Failed to validate the CreateDDL-script for SQLite",
 			    ex);
 		}
-	}
-	
-	private void disableDatabaseLogging(boolean logging) {
-		// If logging is allowed, nothing has to be changed
-		if (logging) {
-			return;
-		}
-		
-		// Retrieve the level of the root logger
-		loggerLevel = Logger.getLogger("").getLevel();
-		
-		// Set the level of the root logger to OFF
-		Logger.getLogger("").setLevel(Level.OFF);
-	}
-	
-	private void enableDatabaseLogging(boolean logging) {
-		// If logging is allowed, nothing has to be changed
-		if (logging) {
-			return;
-		}
-		
-		// Set the level of the root logger back to the original value
-		Logger.getLogger("").setLevel(loggerLevel);
-	}
-	
-	/**
-	 * Get a list of classes which should be registered with the EbeanServer
-	 * 
-	 * @return List List of classes which should be registered with the EbeanServer
-	 */
-	protected List<Class<?>> getDatabaseClasses() {
-		return new ArrayList<Class<?>>();
-	}
-	
-	/**
-	 * Method called before the loaded database is being dropped
-	 */
-	protected void beforeDropDatabase() {
-	}
-	
-	/**
-	 * Method called after the loaded database has been created
-	 */
-	protected void afterCreateDatabase() {
-	}
-	
-	/**
-	 * Method called near the end of prepareDatabase, before the dataSourceConfig is attached to the serverConfig.
-	 * 
-	 * @param dataSourceConfig
-	 * @param serverConfig
-	 */
-	protected void prepareDatabaseAdditionalConfig(DataSourceConfig dataSourceConfig, ServerConfig serverConfig) {
-	}
-	
-	/**
-	 * Get the instance of the EbeanServer
-	 * 
-	 * @return EbeanServer Instance of the EbeanServer
-	 */
-	public EbeanServer getDatabase() {
-		return ebeanServer;
 	}
 }

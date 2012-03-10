@@ -16,69 +16,90 @@ import org.bukkit.inventory.PlayerInventory;
  */
 public class Util {
 	
+	/** Minecraft's console logger. */
+	private final Logger minecraftLogger = Logger.getLogger("Minecraft");
+	
 	/** The plugin. */
-	private Main plugin;
+	private final Main plugin;
 	
 	public Util(Main instance) {
 		plugin = instance;
 	}
 	
 	/**
-	 * Sets the block to a certain material.
+	 * Send a message to all players on the server through chat.<br/>
+	 * To use colors, see {@link com.gtdclan.gtdsmp.gtdsmpUtil#parseColors(String) parseColors(String)}
 	 * 
-	 * @param location
-	 *        the location
-	 * @param material
-	 *        the material
-	 * @return The block state
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material, Boolean) setBlock(Location, Material, Boolean)
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material, Boolean, byte) setBlock(Location, Material, Boolean, Data)
+	 * @param message
+	 *        the message
+	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#broadcast(String[]) broadcast(String[])
 	 */
-	public BlockState setBlock(Location location, Material material) {
-		location.getBlock().setTypeId(material.getId());
-		BlockState BlockState = location.getBlock().getState();
-		return BlockState;
+	public void broadcast(String message) {
+		plugin.getServer().broadcastMessage(parseColors(message));
 	}
 	
 	/**
-	 * Sets the block to a certain material.
+	 * Send a list of messages to all players on the server through chat.<br/>
+	 * To use colors, see {@link com.gtdclan.gtdsmp.gtdsmpUtil#parseColors(String) parseColors(String)}
 	 * 
-	 * @param location
-	 *        the location
-	 * @param material
-	 *        the material
-	 * @param physics
-	 *        the physics
-	 * @return The block state.
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material) setBlock(Location, Material)
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material, Boolean, byte) setBlock(Location, Material, Boolean, Data)
+	 * @param messages
+	 *        the messages
+	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#broadcast(String) broadcast(String)
 	 */
-	public BlockState setBlock(Location location, Material material, Boolean physics) {
-		location.getBlock().setTypeId(material.getId(), physics);
-		BlockState BlockState = location.getBlock().getState();
-		return BlockState;
+	public void broadcast(String[] messages) {
+		for (String Message : messages) {
+			broadcast(Message);
+		}
 	}
 	
 	/**
-	 * Sets the block to a certain material.
+	 * Sends message to the console.
 	 * 
-	 * @param location
-	 *        the location
-	 * @param material
-	 *        the material
-	 * @param physics
-	 *        the physics
-	 * @param data
-	 *        the data
-	 * @return The block state.
-	 * @see http://www.minecraftwiki.net/wiki/Data_values for more info on what to pass to the Data param.
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material) setBlock(Location, Material)
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material, Boolean) setBlock(Location, Material, Boolean)
+	 * @param message
+	 *        the message
+	 * @param level
+	 *        the level
+	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#console(String[]) console(String[])
 	 */
-	public BlockState setBlock(Location location, Material material, Boolean physics, byte data) {
-		location.getBlock().setTypeIdAndData(material.getId(), data, physics);
-		BlockState BlockState = location.getBlock().getState();
-		return BlockState;
+	public void console(String message, Level level) {
+		minecraftLogger.log(level, "[" + plugin.getDescription().getName() + "] " + message);
+	}
+	
+	/**
+	 * Sends a list of messages to the console.
+	 * 
+	 * @param messages
+	 *        the messages
+	 * @param level
+	 *        the level
+	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#console(String) console(String)
+	 */
+	public void console(String[] messages, Level level) {
+		for (String Message : messages) {
+			console(Message, level);
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	public Boolean hasAmount(String playerName) {
+		Player player = plugin.getServer().getPlayerExact(playerName);
+		PlayerInventory playerInv = player.getInventory();
+		ItemStack[] playerItems = player.getInventory().getContents();
+		Material feeItem = Material.getMaterial(plugin.warpItem);
+		Integer feeAmount = plugin.warpAmount;
+		ItemStack fee = new ItemStack(feeItem, feeAmount);
+		Integer has = 0;
+		for (ItemStack item : playerItems) {
+			if (item != null && item.getType() == feeItem) {
+				has += item.getAmount();
+			}
+		}
+		if (has > feeAmount) {
+			playerInv.removeItem(fee);
+			player.updateInventory();
+			return true;
+		}
+		return false;
 	}
 	
 	// @formatter:off
@@ -148,81 +169,60 @@ public class Util {
 	}
 	
 	/**
-	 * Send a message to all players on the server through chat.<br/>
-	 * To use colors, see {@link com.gtdclan.gtdsmp.gtdsmpUtil#parseColors(String) parseColors(String)}
+	 * Sets the block to a certain material.
 	 * 
-	 * @param message
-	 *        the message
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#broadcast(String[]) broadcast(String[])
+	 * @param location
+	 *        the location
+	 * @param material
+	 *        the material
+	 * @return The block state
+	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material, Boolean) setBlock(Location, Material, Boolean)
+	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material, Boolean, byte) setBlock(Location, Material, Boolean, Data)
 	 */
-	public void broadcast(String message) {
-		plugin.getServer().broadcastMessage(parseColors(message));
+	public BlockState setBlock(Location location, Material material) {
+		location.getBlock().setTypeId(material.getId());
+		BlockState BlockState = location.getBlock().getState();
+		return BlockState;
 	}
 	
 	/**
-	 * Send a list of messages to all players on the server through chat.<br/>
-	 * To use colors, see {@link com.gtdclan.gtdsmp.gtdsmpUtil#parseColors(String) parseColors(String)}
+	 * Sets the block to a certain material.
 	 * 
-	 * @param messages
-	 *        the messages
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#broadcast(String) broadcast(String)
+	 * @param location
+	 *        the location
+	 * @param material
+	 *        the material
+	 * @param physics
+	 *        the physics
+	 * @return The block state.
+	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material) setBlock(Location, Material)
+	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material, Boolean, byte) setBlock(Location, Material, Boolean, Data)
 	 */
-	public void broadcast(String[] messages) {
-		for (String Message : messages) {
-			broadcast(Message);
-		}
-	}
-	
-	/** Minecraft's console logger. */
-	private Logger minecraftLogger = Logger.getLogger("Minecraft");
-	
-	/**
-	 * Sends message to the console.
-	 * 
-	 * @param message
-	 *        the message
-	 * @param level
-	 *        the level
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#console(String[]) console(String[])
-	 */
-	public void console(String message, Level level) {
-		minecraftLogger.log(level, "[" + plugin.getDescription().getName() + "] " + message);
+	public BlockState setBlock(Location location, Material material, Boolean physics) {
+		location.getBlock().setTypeId(material.getId(), physics);
+		BlockState BlockState = location.getBlock().getState();
+		return BlockState;
 	}
 	
 	/**
-	 * Sends a list of messages to the console.
+	 * Sets the block to a certain material.
 	 * 
-	 * @param messages
-	 *        the messages
-	 * @param level
-	 *        the level
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#console(String) console(String)
+	 * @param location
+	 *        the location
+	 * @param material
+	 *        the material
+	 * @param physics
+	 *        the physics
+	 * @param data
+	 *        the data
+	 * @return The block state.
+	 * @see http://www.minecraftwiki.net/wiki/Data_values for more info on what to pass to the Data param.
+	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material) setBlock(Location, Material)
+	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material, Boolean) setBlock(Location, Material, Boolean)
 	 */
-	public void console(String[] messages, Level level) {
-		for (String Message : messages) {
-			console(Message, level);
-		}
-	}
-	
-	@SuppressWarnings("deprecation")
-    public Boolean hasAmount(String playerName) {
-		Player player = plugin.getServer().getPlayerExact(playerName);
-		PlayerInventory playerInv = player.getInventory();
-		ItemStack[] playerItems = player.getInventory().getContents();
-		Material feeItem = Material.getMaterial(plugin.warpItem);
-		Integer feeAmount = plugin.warpAmount;
-		ItemStack fee = new ItemStack(feeItem, feeAmount);
-		Integer has = 0;
-		for (ItemStack item : playerItems) {
-			if (item != null && item.getType() == feeItem) {
-				has += item.getAmount();
-			}
-		}
-		if (has > feeAmount) {
-			playerInv.removeItem(fee);
-			player.updateInventory();
-			return true;
-		}
-		return false;
+	public BlockState setBlock(Location location, Material material, Boolean physics, byte data) {
+		location.getBlock().setTypeIdAndData(material.getId(), data, physics);
+		BlockState BlockState = location.getBlock().getState();
+		return BlockState;
 	}
 }

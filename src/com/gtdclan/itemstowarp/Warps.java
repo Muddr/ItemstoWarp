@@ -1,6 +1,7 @@
 package com.gtdclan.itemstowarp;
 
 import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -10,7 +11,7 @@ import com.avaje.ebean.Query;
 public class Warps {
 	
 	/** The plugin. */
-	private Main plugin;
+	private final Main plugin;
 	
 	public Warps(Main instance) {
 		plugin = instance;
@@ -45,6 +46,25 @@ public class Warps {
 		player.sendMessage(plugin.Util.parseColors(messages));
 	}
 	
+	public void removeWarp(String playerName, String warpName) {
+		DB data = plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
+		Player player = plugin.getServer().getPlayerExact(playerName);
+		if (data == null) {
+			player.sendMessage(plugin.Util.parseColors("Can not find warp with name: " + warpName));
+		}
+		else {
+			Boolean isWarpCreator = playerName.equals(data.getPlayername());
+			Boolean hasPerm = player.hasPermission("itemstowarp.remove.any");
+			if (isWarpCreator || hasPerm) {
+				plugin.database.getDatabase().delete(data);
+				player.sendMessage(plugin.Util.parseColors("Warp " + warpName + " has be removed."));
+			}
+			else {
+				player.sendMessage(plugin.Util.parseColors("You can not delete a warp that you don't own."));
+			}
+		}
+	}
+	
 	public void togglePrivate(String playerName, String warpName) {
 		DB data = plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
 		Player player = plugin.getServer().getPlayerExact(playerName);
@@ -70,54 +90,46 @@ public class Warps {
 		}
 	}
 	
-	public void removeWarp(String playerName, String warpName) {
-		DB data = plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
+	public void warpList(String playerName, Integer page) {
+		Integer max = 9;
+		int pagestart = (page - 1) * max;
+		int pageend = (pagestart + max);
 		Player player = plugin.getServer().getPlayerExact(playerName);
-		if (data == null) {
-			player.sendMessage(plugin.Util.parseColors("Can not find warp with name: " + warpName));
+		Boolean seeAll = player.hasPermission("itemstowarp.list.all");
+		Query<DB> data;
+		if (seeAll) {
+			data = plugin.database.getDatabase().find(DB.class).where().gt("id", 0).orderBy("Warpname");
 		}
 		else {
-			Boolean isWarpCreator = playerName.equals(data.getPlayername());
-			Boolean hasPerm = player.hasPermission("itemstowarp.remove.any");
-			if (isWarpCreator || hasPerm) {
-				plugin.database.getDatabase().delete(data);
-				player.sendMessage(plugin.Util.parseColors("Warp " + warpName + " has be removed."));
-			}
-			else {
-				player.sendMessage(plugin.Util.parseColors("You can not delete a warp that you don't own."));
-			}
+			data = plugin.database.getDatabase().find(DB.class).where().eq("Isprivate", false).orderBy("Warpname");
 		}
-	}
-	
-	public void warpPlayer(String playerName, String warpName) {
-		DB data = plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
-		Player player = plugin.getServer().getPlayerExact(playerName);
-		if (data == null) {
-			player.sendMessage(plugin.Util.parseColors("Can not find warp with name: " + warpName));
-		}
-		else {
-			Boolean isWarpCreator = playerName.equals(data.getPlayername());
-			Boolean isPublic = !data.getIsprivate();
-			Boolean hasPerm = player.hasPermission("itemstowarp.warp.any");
-			Boolean nocost = player.hasPermission("itemstowarp.warp.nocost");
+		int warpCount = data.findRowCount();
+		if (data != null && warpCount > 0) {
 			
-			if (isWarpCreator || isPublic || hasPerm) {
-				Boolean charged = plugin.Util.hasAmount(playerName);
-				if (charged || nocost) {
-					World warpWorld = plugin.getServer().getWorld(data.getWarpworld());
-					int warpx = data.getWarpx();
-					int warpy = data.getWarpy() + 1;
-					int warpz = data.getWarpz();
-					Location warpLoc = new Location(warpWorld, warpx, warpy, warpz);
-					player.teleport(warpLoc);
-				}
-				else {
-					player.sendMessage(plugin.Util.parseColors("Sorry. You can't afford to warp."));
-				}
+			List<DB> warpList = data.findList();
+			
+			player.sendMessage("Warp Name | Owner | Location; Page " + page + "/" + (int) Math.ceil((double) warpCount / (double) max));
+			
+			if (warpCount < pageend) {
+				pageend = warpCount;
 			}
-			else {
-				player.sendMessage(plugin.Util.parseColors("Sorry. This warp is private."));
+			for (int i = pagestart; i < pageend; i++) {
+				String color = "";
+				String warpName = warpList.get(i).getWarpname();
+				String ownerName = warpList.get(i).getPlayername();
+				String world = warpList.get(i).getWarpworld();
+				Integer x = warpList.get(i).getWarpx();
+				Integer y = warpList.get(i).getWarpy();
+				Integer z = warpList.get(i).getWarpz();
+				Boolean isPrivate = warpList.get(i).getIsprivate();
+				if (isPrivate) {
+					color = "^red";
+				}
+				player.sendMessage(plugin.Util.parseColors(color + warpName + " | " + ownerName + " | " + world + ":" + x + "," + y + "," + z));
 			}
+		}
+		else {
+			player.sendMessage("Error: Could not find any warps.");
 		}
 	}
 	
@@ -157,46 +169,35 @@ public class Warps {
 		}
 	}
 	
-	public void warpList(String playerName, Integer page) {
-		Integer max = 9;
-		int pagestart = (page - 1) * max;
-		int pageend = (pagestart + max);
+	public void warpPlayer(String playerName, String warpName) {
+		DB data = plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
 		Player player = plugin.getServer().getPlayerExact(playerName);
-		Boolean seeAll = player.hasPermission("itemstowarp.list.all");
-		Query<DB> data;
-		if (seeAll) {
-			data = plugin.database.getDatabase().find(DB.class).where().gt("id", 0).orderBy("Warpname");
+		if (data == null) {
+			player.sendMessage(plugin.Util.parseColors("Can not find warp with name: " + warpName));
 		}
 		else {
-			data = plugin.database.getDatabase().find(DB.class).where().eq("Isprivate", false).orderBy("Warpname");
-		}
-		int warpCount = data.findRowCount();
-		if (data != null && warpCount > 0) {
+			Boolean isWarpCreator = playerName.equals(data.getPlayername());
+			Boolean isPublic = !data.getIsprivate();
+			Boolean hasPerm = player.hasPermission("itemstowarp.warp.any");
+			Boolean nocost = player.hasPermission("itemstowarp.warp.nocost");
 			
-			List<DB> warpList = data.findList();
-		
-			player.sendMessage("Warp Name | Owner | Location; Page " + page + "/" + (int) Math.ceil((double) warpCount / (double) max));
-			
-			if (warpCount < pageend) {
-				pageend = warpCount;
-			}
-			for (int i = pagestart; i < pageend; i++) {
-				String color = "";
-				String warpName = warpList.get(i).getWarpname();
-				String ownerName = warpList.get(i).getPlayername();
-				String world = warpList.get(i).getWarpworld();
-				Integer x = warpList.get(i).getWarpx();
-				Integer y = warpList.get(i).getWarpy();
-				Integer z = warpList.get(i).getWarpz();
-				Boolean isPrivate = warpList.get(i).getIsprivate();
-				if (isPrivate) {
-					color = "^red";
+			if (isWarpCreator || isPublic || hasPerm) {
+				Boolean charged = plugin.Util.hasAmount(playerName);
+				if (charged || nocost) {
+					World warpWorld = plugin.getServer().getWorld(data.getWarpworld());
+					int warpx = data.getWarpx();
+					int warpy = data.getWarpy() + 1;
+					int warpz = data.getWarpz();
+					Location warpLoc = new Location(warpWorld, warpx, warpy, warpz);
+					player.teleport(warpLoc);
 				}
-				player.sendMessage(plugin.Util.parseColors(color + warpName + " | " + ownerName + " | " + world + ":" + x + "," + y + "," + z));
+				else {
+					player.sendMessage(plugin.Util.parseColors("Sorry. You can't afford to warp."));
+				}
 			}
-		}
-		else {
-			player.sendMessage("Error: Could not find any warps.");
+			else {
+				player.sendMessage(plugin.Util.parseColors("Sorry. This warp is private."));
+			}
 		}
 	}
 }

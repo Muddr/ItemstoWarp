@@ -13,6 +13,8 @@ public class DB {
 	@Id
 	private int id;
 	@NotNull
+	private Boolean Isprivate;
+	@NotNull
 	private String Playername;
 	@NotNull
 	private String Warpname;
@@ -24,70 +26,68 @@ public class DB {
 	private int Warpy;
 	@NotNull
 	private int Warpz;
-	@NotNull
-	private Boolean Isprivate;
-	
-	public void setId(int id) {
-		this.id = id;
-	}
 	
 	public int getId() {
 		return id;
-	}
-	
-	public String getPlayername() {
-		return Playername;
-	}
-	
-	public void setPlayername(String Playername) {
-		this.Playername = Playername;
-	}
-	
-	public String getWarpname() {
-		return Warpname;
-	}
-	
-	public void setWarpname(String Warpname) {
-		this.Warpname = Warpname;
-	}
-	
-	public String getWarpworld() {
-		return Warpworld;
-	}
-	
-	public void setWarpworld(String Warpworld) {
-		this.Warpworld = Warpworld;
-	}
-	
-	public int getWarpx() {
-		return Warpx;
-	}
-	
-	public void setWarpx(int Warpx) {
-		this.Warpx = Warpx;
-	}
-	
-	public int getWarpy() {
-		return Warpy;
-	}
-	
-	public void setWarpy(int Warpy) {
-		this.Warpy = Warpy;
-	}
-	
-	public int getWarpz() {
-		return Warpz;
-	}
-	
-	public void setWarpz(int Warpz) {
-		this.Warpz = Warpz;
 	}
 	
 	public Boolean getIsprivate() {
 		return Isprivate;
 	}
 	
+	public String getPlayername() {
+		return Playername;
+	}
+	
+	public String getWarpname() {
+		return Warpname;
+	}
+	
+	public String getWarpworld() {
+		return Warpworld;
+	}
+	
+	public int getWarpx() {
+		return Warpx;
+	}
+	
+	public int getWarpy() {
+		return Warpy;
+	}
+	
+	public int getWarpz() {
+		return Warpz;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	
 	public void setIsprivate(Boolean Isprivate) {
 		this.Isprivate = Isprivate;
+	}
+	
+	public void setPlayername(String Playername) {
+		this.Playername = Playername;
+	}
+	
+	public void setWarpname(String Warpname) {
+		this.Warpname = Warpname;
+	}
+	
+	public void setWarpworld(String Warpworld) {
+		this.Warpworld = Warpworld;
+	}
+	
+	public void setWarpx(int Warpx) {
+		this.Warpx = Warpx;
+	}
+	
+	public void setWarpy(int Warpy) {
+		this.Warpy = Warpy;
+	}
+	
+	public void setWarpz(int Warpz) {
+		this.Warpz = Warpz;
 	}
 }
