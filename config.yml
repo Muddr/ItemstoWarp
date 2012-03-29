@@ -6,6 +6,10 @@ currency:
 sign:
   protected: true
 
+show:
+  cords: true
+  world: true
+
 DB:
   driver: 'org.sqlite.JDBC'
   url: 'jdbc:sqlite:{DIR}{NAME}.db'

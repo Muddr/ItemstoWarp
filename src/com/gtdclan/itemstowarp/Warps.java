@@ -109,18 +109,26 @@ public class Warps {
 			
 			for (DB warp : warpList) {
 				String color = "";
-				
 				String warpName = warp.getWarpname();
 				String ownerName = warp.getPlayername();
-				String world = warp.getWarpworld();
-				Integer x = warp.getWarpx();
-				Integer y = warp.getWarpy();
-				Integer z = warp.getWarpz();
+				String message = "";
+				if (this.plugin.worlds) {
+					message = warp.getWarpworld();
+				}
+				if (this.plugin.cords) {
+					if (this.plugin.worlds) {
+						message += " : ";
+					}
+					Integer x = warp.getWarpx();
+					Integer y = warp.getWarpy();
+					Integer z = warp.getWarpz();
+					message += x + ", " + y + ", " + z;
+				}
 				Boolean isPrivate = warp.getIsprivate();
 				if (isPrivate) {
 					color = "^red";
 				}
-				player.sendMessage(this.plugin.Util.parseColors(color + warpName + "   |   " + ownerName + "   |   " + world + " : " + x + ", " + y + ", " + z));
+				player.sendMessage(this.plugin.Util.parseColors(color + warpName + "   |   " + ownerName + "   |   " + message));
 			}
 		}
 		else {
@@ -141,17 +149,25 @@ public class Warps {
 			for (DB warp : warpList) {
 				String color = "";
 				String warpName = warp.getWarpname();
-				
 				String ownerName = warp.getPlayername();
-				String world = warp.getWarpworld();
-				Integer x = warp.getWarpx();
-				Integer y = warp.getWarpy();
-				Integer z = warp.getWarpz();
+				String message = "";
+				if (this.plugin.worlds) {
+					message = warp.getWarpworld();
+				}
+				if (this.plugin.cords) {
+					if (this.plugin.worlds) {
+						message += " : ";
+					}
+					Integer x = warp.getWarpx();
+					Integer y = warp.getWarpy();
+					Integer z = warp.getWarpz();
+					message += x + ", " + y + ", " + z;
+				}
 				Boolean isPrivate = warp.getIsprivate();
 				if (isPrivate) {
 					color = "^red";
 				}
-				player.sendMessage(this.plugin.Util.parseColors(color + warpName + "   |   " + ownerName + "   |   " + world + " : " + x + ", " + y + ", " + z));
+				player.sendMessage(this.plugin.Util.parseColors(color + warpName + "   |   " + ownerName + "   |   " + message));
 			}
 		}
 		else {

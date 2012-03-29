@@ -15,7 +15,7 @@ public class Main extends JavaPlugin {
 	public Configuration Config = new Configuration(this);
 	public UtilDatabase database;
 	public Listeners Listener = new Listeners(this);
-	public Boolean signProtected;
+	public Boolean signProtected, cords, worlds;
 	public Util Util = new Util(this);
 	public Integer warpAmount;
 	public Integer warpItem;
@@ -65,6 +65,8 @@ public class Main extends JavaPlugin {
 		this.warpAmount = this.getConfig().getInt("currency.amount");
 		this.warpItem = this.getConfig().getInt("currency.item");
 		this.signProtected = this.getConfig().getBoolean("sign.protected");
+		this.cords = this.getConfig().getBoolean("show.cords");
+		this.worlds = this.getConfig().getBoolean("show.world");
 		
 		// Setup database
 		this.initializeDatabase();
