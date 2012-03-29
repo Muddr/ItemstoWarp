@@ -121,21 +121,7 @@ public class Commands implements CommandExecutor {
 				}
 				if (args[0].equalsIgnoreCase("list")) {
 					if (player.hasPermission("itemstowarp.list") || player.hasPermission("itemstowarp.list.all")) {
-						Integer page = 1;
-						if (args.length == 1) {
-							player.sendMessage(this.plugin.Util.parseColors("^yellowUse /itw list # for more pages"));
-							page = 1;
-							this.plugin.Warps.warpList(playerName, page);
-						}
-						else {
-							page = Integer.parseInt(args[1]);
-							if (page > 0) {
-								this.plugin.Warps.warpList(playerName, page);
-							}
-							else {
-								player.sendMessage(this.plugin.Util.parseColors("^redPage must be a number."));
-							}
-						}
+						this.plugin.Warps.warpList(playerName);
 					}
 					else {
 						player.sendMessage(this.plugin.Util.parseColors("^redYou do not have permission to list warps."));
@@ -143,21 +129,7 @@ public class Commands implements CommandExecutor {
 				}
 				if (args[0].equalsIgnoreCase("mylist")) {
 					if (player.hasPermission("itemstowarp.list.own")) {
-						Integer page = 1;
-						if (args.length == 1) {
-							player.sendMessage(this.plugin.Util.parseColors("^yellowUse /itw mylist # for more pages"));
-							page = 1;
-							this.plugin.Warps.warpMyList(playerName, page);
-						}
-						else {
-							page = Integer.parseInt(args[1]);
-							if (page > 0) {
-								this.plugin.Warps.warpMyList(playerName, page);
-							}
-							else {
-								player.sendMessage(this.plugin.Util.parseColors("^redPage must be a number."));
-							}
-						}
+						this.plugin.Warps.warpMyList(playerName);
 					}
 					else {
 						player.sendMessage(this.plugin.Util.parseColors("^redYou do not have permission to list your warps."));

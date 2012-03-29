@@ -90,10 +90,7 @@ public class Warps {
 		}
 	}
 	
-	public void warpList(String playerName, Integer page) {
-		Integer max = 9;
-		int pagestart = (page - 1) * max;
-		int pageend = (pagestart + max);
+	public void warpList(String playerName) {
 		Player player = this.plugin.getServer().getPlayerExact(playerName);
 		Boolean seeAll = player.hasPermission("itemstowarp.list.all");
 		Query<DB> data;
@@ -107,25 +104,23 @@ public class Warps {
 		if (data != null && warpCount > 0) {
 			
 			List<DB> warpList = data.findList();
+			player.sendMessage("");
+			player.sendMessage(this.plugin.Util.parseColors("^gold^underlineWarp Name   |   Owner   |   Location"));
 			
-			player.sendMessage("Warp Name | Owner | Location; Page " + page + "/" + (int) Math.ceil((double) warpCount / (double) max));
-			
-			if (warpCount < pageend) {
-				pageend = warpCount;
-			}
-			for (int i = pagestart; i < pageend; i++) {
+			for (DB warp : warpList) {
 				String color = "";
-				String warpName = warpList.get(i).getWarpname();
-				String ownerName = warpList.get(i).getPlayername();
-				String world = warpList.get(i).getWarpworld();
-				Integer x = warpList.get(i).getWarpx();
-				Integer y = warpList.get(i).getWarpy();
-				Integer z = warpList.get(i).getWarpz();
-				Boolean isPrivate = warpList.get(i).getIsprivate();
+				
+				String warpName = warp.getWarpname();
+				String ownerName = warp.getPlayername();
+				String world = warp.getWarpworld();
+				Integer x = warp.getWarpx();
+				Integer y = warp.getWarpy();
+				Integer z = warp.getWarpz();
+				Boolean isPrivate = warp.getIsprivate();
 				if (isPrivate) {
 					color = "^red";
 				}
-				player.sendMessage(this.plugin.Util.parseColors(color + warpName + " | " + ownerName + " | " + world + ":" + x + "," + y + "," + z));
+				player.sendMessage(this.plugin.Util.parseColors(color + warpName + "   |   " + ownerName + "   |   " + world + " : " + x + ", " + y + ", " + z));
 			}
 		}
 		else {
@@ -133,35 +128,30 @@ public class Warps {
 		}
 	}
 	
-	public void warpMyList(String playerName, Integer page) {
-		Integer max = 9;
-		int pagestart = (page - 1) * max;
-		int pageend = (pagestart + max);
+	public void warpMyList(String playerName) {
+		
 		Player player = this.plugin.getServer().getPlayerExact(playerName);
 		Query<DB> data = this.plugin.database.getDatabase().find(DB.class).where().eq("PlayerName", playerName).orderBy("Warpname");
 		int warpCount = data.findRowCount();
 		if (data != null && warpCount > 0) {
 			
 			List<DB> warpList = data.findList();
-			
-			player.sendMessage("Warp Name | Owner | Location; Page " + page + "/" + (int) Math.ceil((double) warpCount / (double) max));
-			if (warpCount < pageend) {
-				pageend = warpCount;
-			}
-			for (int i = pagestart; i < pageend; i++) {
+			player.sendMessage("");
+			player.sendMessage(this.plugin.Util.parseColors("^gold^underlineWarp Name   |   Owner   |   Location"));
+			for (DB warp : warpList) {
 				String color = "";
-				String warpName = warpList.get(i).getWarpname();
+				String warpName = warp.getWarpname();
 				
-				String ownerName = warpList.get(i).getPlayername();
-				String world = warpList.get(i).getWarpworld();
-				Integer x = warpList.get(i).getWarpx();
-				Integer y = warpList.get(i).getWarpy();
-				Integer z = warpList.get(i).getWarpz();
-				Boolean isPrivate = warpList.get(i).getIsprivate();
+				String ownerName = warp.getPlayername();
+				String world = warp.getWarpworld();
+				Integer x = warp.getWarpx();
+				Integer y = warp.getWarpy();
+				Integer z = warp.getWarpz();
+				Boolean isPrivate = warp.getIsprivate();
 				if (isPrivate) {
 					color = "^red";
 				}
-				player.sendMessage(this.plugin.Util.parseColors(color + warpName + " | " + ownerName + " | " + world + ":" + x + "," + y + "," + z));
+				player.sendMessage(this.plugin.Util.parseColors(color + warpName + "   |   " + ownerName + "   |   " + world + " : " + x + ", " + y + ", " + z));
 			}
 		}
 		else {
