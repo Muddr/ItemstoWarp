@@ -191,9 +191,9 @@ public class Warps {
 				Boolean charged = this.plugin.Util.hasAmount(playerName);
 				if (charged || nocost) {
 					World warpWorld = this.plugin.getServer().getWorld(data.getWarpworld());
-					int warpx = data.getWarpx();
-					int warpy = data.getWarpy() + 1;
-					int warpz = data.getWarpz();
+					double warpx = data.getWarpx() + 0.5;
+					double warpy = data.getWarpy() + 0.5;
+					double warpz = data.getWarpz() + 0.5;
 					Location warpLoc = new Location(warpWorld, warpx, warpy, warpz);
 					player.teleport(warpLoc);
 				}
