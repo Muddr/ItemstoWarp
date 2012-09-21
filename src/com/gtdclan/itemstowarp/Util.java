@@ -4,9 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -24,32 +22,6 @@ public class Util {
 	
 	public Util(Main instance) {
 		this.plugin = instance;
-	}
-	
-	/**
-	 * Send a message to all players on the server through chat.<br/>
-	 * To use colors, see {@link com.gtdclan.gtdsmp.gtdsmpUtil#parseColors(String) parseColors(String)}
-	 * 
-	 * @param message
-	 *        the message
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#broadcast(String[]) broadcast(String[])
-	 */
-	public void broadcast(String message) {
-		this.plugin.getServer().broadcastMessage(this.parseColors(message));
-	}
-	
-	/**
-	 * Send a list of messages to all players on the server through chat.<br/>
-	 * To use colors, see {@link com.gtdclan.gtdsmp.gtdsmpUtil#parseColors(String) parseColors(String)}
-	 * 
-	 * @param messages
-	 *        the messages
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#broadcast(String) broadcast(String)
-	 */
-	public void broadcast(String[] messages) {
-		for (String Message : messages) {
-			this.broadcast(Message);
-		}
 	}
 	
 	/**
@@ -106,7 +78,6 @@ public class Util {
 		Player player = this.plugin.getServer().getPlayerExact(playerName);
 		boolean hasPerm = player.hasPermission("itemstowarp.warp.nocost");
 		int gamemode = player.getGameMode().getValue();
-		this.plugin.Util.console("gamemode = " + player.getGameMode().getValue(), Level.WARNING);
 		if (hasPerm || (this.plugin.freeCreative & gamemode == 1)) {
 			return true;
 		}
@@ -179,63 +150,5 @@ public class Util {
 			newmessages[i] = this.parseColors(messages[i]);
 		}
 		return newmessages;
-	}
-	
-	/**
-	 * Sets the block to a certain material.
-	 * 
-	 * @param location
-	 *        the location
-	 * @param material
-	 *        the material
-	 * @return The block state
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material, Boolean) setBlock(Location, Material, Boolean)
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material, Boolean, byte) setBlock(Location, Material, Boolean, Data)
-	 */
-	public BlockState setBlock(Location location, Material material) {
-		location.getBlock().setTypeId(material.getId());
-		BlockState BlockState = location.getBlock().getState();
-		return BlockState;
-	}
-	
-	/**
-	 * Sets the block to a certain material.
-	 * 
-	 * @param location
-	 *        the location
-	 * @param material
-	 *        the material
-	 * @param physics
-	 *        the physics
-	 * @return The block state.
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material) setBlock(Location, Material)
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material, Boolean, byte) setBlock(Location, Material, Boolean, Data)
-	 */
-	public BlockState setBlock(Location location, Material material, Boolean physics) {
-		location.getBlock().setTypeId(material.getId(), physics);
-		BlockState BlockState = location.getBlock().getState();
-		return BlockState;
-	}
-	
-	/**
-	 * Sets the block to a certain material.
-	 * 
-	 * @param location
-	 *        the location
-	 * @param material
-	 *        the material
-	 * @param physics
-	 *        the physics
-	 * @param data
-	 *        the data
-	 * @return The block state.
-	 * @see http://www.minecraftwiki.net/wiki/Data_values for more info on what to pass to the Data param.
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material) setBlock(Location, Material)
-	 * @see com.gtdclan.gtdsmp.gtdsmpUtil#setBlock(Location, Material, Boolean) setBlock(Location, Material, Boolean)
-	 */
-	public BlockState setBlock(Location location, Material material, Boolean physics, byte data) {
-		location.getBlock().setTypeIdAndData(material.getId(), data, physics);
-		BlockState BlockState = location.getBlock().getState();
-		return BlockState;
 	}
 }
