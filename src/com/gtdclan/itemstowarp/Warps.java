@@ -185,7 +185,7 @@ public class Warps {
 			Boolean isWarpCreator = playerName.equals(data.getPlayername());
 			Boolean isPublic = !data.getIsprivate();
 			Boolean hasPerm = player.hasPermission("itemstowarp.warp.any");
-			Boolean nocost = player.hasPermission("itemstowarp.warp.nocost");
+			Boolean nocost = this.plugin.Util.noCost(playerName);
 			
 			if (isWarpCreator || isPublic || hasPerm) {
 				Boolean charged = this.plugin.Util.hasAmount(playerName);

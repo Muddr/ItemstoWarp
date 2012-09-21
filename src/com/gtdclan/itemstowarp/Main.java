@@ -15,13 +15,13 @@ public class Main extends JavaPlugin {
 	public Configuration Config = new Configuration(this);
 	public UtilDatabase database;
 	public Listeners Listener = new Listeners(this);
-	public Boolean signProtected, cords, worlds;
+	public Boolean signProtected, cords, worlds, freeCreative;
 	public Util Util = new Util(this);
-	public Integer warpAmount;
-	public Integer warpItem;
+	public Integer warpAmount, warpItem, updatetool;
 	public Warps Warps = new Warps(this);
 	public FileConfiguration yml_config;
 	public File yml_configFile;
+	public String publicText, privateText;
 	
 	private void initializeDatabase() {
 		// Configuration config = Config.LoadConfig();
@@ -67,6 +67,10 @@ public class Main extends JavaPlugin {
 		this.signProtected = this.getConfig().getBoolean("sign.protected");
 		this.cords = this.getConfig().getBoolean("show.cords");
 		this.worlds = this.getConfig().getBoolean("show.world");
+		this.freeCreative = this.getConfig().getBoolean("currency.freeforcreative");
+		this.updatetool = this.getConfig().getInt("sign.updatetool");
+		this.publicText = this.getConfig().getString("sign.text.public", "");
+		this.privateText = this.getConfig().getString("sign.text.private", "Private");
 		
 		// Setup database
 		this.initializeDatabase();

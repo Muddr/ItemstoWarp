@@ -2,9 +2,14 @@
 currency:
   amount: 20
   item: 331
+  freeforcreative: false
 
 sign:
   protected: true
+  updatetool: 280
+  text:
+    public: ''
+    private: 'Private'
 
 show:
   cords: true

@@ -102,6 +102,19 @@ public class Util {
 		return false;
 	}
 	
+	public Boolean noCost(String playerName) {
+		Player player = this.plugin.getServer().getPlayerExact(playerName);
+		boolean hasPerm = player.hasPermission("itemstowarp.warp.nocost");
+		int gamemode = player.getGameMode().getValue();
+		this.plugin.Util.console("gamemode = " + player.getGameMode().getValue(), Level.WARNING);
+		if (hasPerm || (this.plugin.freeCreative & gamemode == 1)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
 	// @formatter:off
 	/**
 	 * Parses chat colors and replaces it with the correct output value. <br/>

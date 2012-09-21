@@ -50,17 +50,35 @@ public class Listeners implements Listener {
 	@EventHandler
 	public void onInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
+		Material playerItem = player.getItemInHand().getType();
 		Action action = event.getAction();
 		Block block = event.getClickedBlock();
 		if (action == Action.RIGHT_CLICK_BLOCK && (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST)) {
-			if (player.hasPermission("itemstowarp.warp.sign")) {
-				BlockState blockState = block.getState();
-				Sign sign = (Sign) blockState;
-				String line0 = sign.getLine(0);
-				String line1 = sign.getLine(1);
-				if (line0.equalsIgnoreCase("[warp]")) {
+			
+			BlockState blockState = block.getState();
+			Sign sign = (Sign) blockState;
+			String line0 = sign.getLine(0);
+			String line1 = sign.getLine(1);
+			if (line0.equalsIgnoreCase("[warp]")) {
+				event.setCancelled(true);
+				DB data = this.plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", line1).findUnique();
+				if (data == null) {
+					player.sendMessage(this.plugin.Util.parseColors("^redError: Can't find warp."));
+				}
+				else {
+					String line = this.plugin.publicText;
+					if (data.getIsprivate()) {
+						line = this.plugin.privateText;
+					}
+					sign.setLine(3, line);
+					sign.update();
+				}
+				if (playerItem == Material.getMaterial(this.plugin.updatetool)) {
+					return;
+				}
+				
+				if (player.hasPermission("itemstowarp.warp.sign")) {
 					player.performCommand("itw warp " + line1);
-					event.setCancelled(true);
 				}
 			}
 			else {
@@ -74,17 +92,17 @@ public class Listeners implements Listener {
 		Player player = event.getPlayer();
 		String line0 = event.getLine(0);
 		String line1 = event.getLine(1);
-		String line3 = "";
+		String line3 = this.plugin.publicText;
 		if (line0.equalsIgnoreCase("[warp]")) {
 			if (player.hasPermission("itemstowarp.warp.sign.create")) {
 				DB data = this.plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", line1).findUnique();
 				if (data == null) {
-					player.sendMessage("^redError: Can't find warp.");
+					player.sendMessage(this.plugin.Util.parseColors("^redError: Can't find warp."));
 					event.setCancelled(true);
 				}
 				else {
 					if (data.getIsprivate()) {
-						line3 = "Private";
+						line3 = this.plugin.privateText;
 					}
 					event.setLine(0, "[Warp]");
 					event.setLine(1, data.getWarpname());
