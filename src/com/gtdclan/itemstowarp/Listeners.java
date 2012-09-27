@@ -80,9 +80,10 @@ public class Listeners implements Listener {
 				if (player.hasPermission("itemstowarp.warp.sign")) {
 					player.performCommand("itw warp " + line1);
 				}
-			}
-			else {
-				player.sendMessage(this.plugin.Util.parseColors("^redYou do not have permission to use sign warps."));
+				
+				else {
+					player.sendMessage(this.plugin.Util.parseColors("^redYou do not have permission to use sign warps."));
+				}
 			}
 		}
 	}
