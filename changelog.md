@@ -1,3 +1,6 @@
+# v1.2.1 - Works with CB 1.3.2-R0.2
+- Fixed: Incorrect if statement causing an error when right clicking signs.
+
 # v1.2.0 - Works with CB 1.3.2-R0.2
 - Added: config option to choose sign text for private/public warp status.
 	- Defaults have stayed the same; "" for public warps and "Private" for private warps.
