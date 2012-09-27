@@ -2,6 +2,11 @@
 
 A pay-to-warp plugin that can use any item as a currency to warp players to warps that they set up.
 
+## Quick Info
+- Current Version: 1.2.0
+- CB Version: CB 1.3.2-R0.2
+- Changelog: <https://github.com/Muddr/ItemstoWarp/blob/master/changelog.md>
+
 ## Features
 
 - Ability to create and remove warps
