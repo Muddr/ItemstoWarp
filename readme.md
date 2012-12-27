@@ -8,7 +8,7 @@ A pay-to-warp plugin that can use any item as a currency to warp players to warp
 - Changelog: <https://github.com/Muddr/ItemstoWarp/blob/master/changelog.md>
 
 - Since Bukkit is taking forever to approve a file here's a link for the newest version.
-- Download: <https://github.com/downloads/Muddr/ItemstoWarp/itemstowarp.jar>
+- Download: <https://dl.dropbox.com/u/18835236/ItemstoWarp/itemstowarp.jar>
 
 ## Features
 
