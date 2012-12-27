@@ -22,4 +22,5 @@ DB:
   password: ''
   isolation: 'SERIALIZABLE'
   logging: false
-  rebuild: false
+  rebuildDB: false
+  version: 2

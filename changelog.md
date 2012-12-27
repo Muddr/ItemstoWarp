@@ -1,3 +1,10 @@
+# v2.0.0 - Works with CB 1.2.4-R1.0 - CB 1.4.6-R0.1+
+- Added: Ability to import warps from other plugins. Currently only from EcoWarp.
+    - Permissions for importing default to op and those with 'itemstowarp.admin' permission
+- **Major Change:** Database Structure - Added pitch and yaw to warps.
+    - **Database will be backed up and converted on first run**
+- Fixed: Error where you couldn't warp if you had the exact amount needed.
+
 # v1.2.1 - Works with CB 1.3.2-R0.2
 - Fixed: Incorrect if statement causing an error when right clicking signs.
 

@@ -26,6 +26,10 @@ public class DB {
 	private int Warpy;
 	@NotNull
 	private int Warpz;
+	@NotNull
+	private float Warppitch;
+	@NotNull
+	private float Warpyaw;
 	
 	public int getId() {
 		return this.id;
@@ -43,6 +47,10 @@ public class DB {
 		return this.Warpname;
 	}
 	
+	public float getWarppitch() {
+		return this.Warppitch;
+	}
+	
 	public String getWarpworld() {
 		return this.Warpworld;
 	}
@@ -53,6 +61,10 @@ public class DB {
 	
 	public int getWarpy() {
 		return this.Warpy;
+	}
+	
+	public float getWarpyaw() {
+		return this.Warpyaw;
 	}
 	
 	public int getWarpz() {
@@ -75,6 +87,10 @@ public class DB {
 		this.Warpname = Warpname;
 	}
 	
+	public void setWarppitch(float warppitch) {
+		this.Warppitch = warppitch;
+	}
+	
 	public void setWarpworld(String Warpworld) {
 		this.Warpworld = Warpworld;
 	}
@@ -85,6 +101,10 @@ public class DB {
 	
 	public void setWarpy(int Warpy) {
 		this.Warpy = Warpy;
+	}
+	
+	public void setWarpyaw(float warpyaw) {
+		this.Warpyaw = warpyaw;
 	}
 	
 	public void setWarpz(int Warpz) {

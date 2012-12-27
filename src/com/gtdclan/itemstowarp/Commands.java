@@ -31,7 +31,7 @@ public class Commands implements CommandExecutor {
 		for (String arg : args) {
 			fullCommand += " " + arg;
 		}
-		this.plugin.Util.console("Player [" + playerName + "] sent chat command [" + fullCommand + "]", Level.INFO);
+		this.plugin.Util.console("   " + playerName + " sent chat command [" + fullCommand + "]", Level.INFO);
 		
 		// itw Command
 		if (command.equals("itw")) {
@@ -45,12 +45,14 @@ public class Commands implements CommandExecutor {
 					    "  ^gray/itw remove <name>^white : Removes the warp.",
 					    "  ^gray/itw warp <name>^white : Warps to <name>.",
 					    "  ^gray/itw list^white : Lists all public warps.",
-					    "  ^gray/itw mylist^white : Lists all your warps."
+					    "  ^gray/itw mylist^white : Lists all your warps.",
+					    "  ^gray/itw import <plugin>^white : Imports warps from another plugin.",
+					    "  ^gray - available imports:",
+					    "  ^gray - - EcoWarp."
 					};
-					player.sendMessage(this.plugin.Util.parseColors(messages));
+					sender.sendMessage(this.plugin.Util.parseColors(messages));
 					return true;
 				}
-				// itw create Command
 				if (args[0].equalsIgnoreCase("create")) {
 					if (player.hasPermission("itemstowarp.create")) {
 						if (args.length == 1) {
@@ -133,6 +135,22 @@ public class Commands implements CommandExecutor {
 					}
 					else {
 						player.sendMessage(this.plugin.Util.parseColors("^redYou do not have permission to list your warps."));
+					}
+				}
+				if (args[0].equalsIgnoreCase("import")) {
+					if (sender.hasPermission("itemstowarp.import")) {
+						if (args.length == 1) {
+							sender.sendMessage(this.plugin.Util.parseColors("^redYou must include a plugin name to import from"));
+						}
+						else if (args.length > 2) {
+							sender.sendMessage(this.plugin.Util.parseColors("^redPlugin name should not contain spaces."));
+						}
+						else {
+							this.plugin.ImportUtil.doImport(sender.getName(), args[1]);
+						}
+					}
+					else {
+						sender.sendMessage(this.plugin.Util.parseColors("^redYou do not have permission to import warps."));
 					}
 				}
 			}

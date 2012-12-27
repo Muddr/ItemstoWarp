@@ -3,9 +3,12 @@
 A pay-to-warp plugin that can use any item as a currency to warp players to warps that they set up.
 
 ## Quick Info
-- Current Version: 1.2.1
-- CB Version: CB 1.3.2-R0.2
+- Current Version: 2.0.0
+- CB Version: CB 1.2.4-R1.0 - CB 1.4.6-R0.1+ - Plugin should never break unless bukkit make major changes
 - Changelog: <https://github.com/Muddr/ItemstoWarp/blob/master/changelog.md>
+
+- Since Bukkit is taking forever to approve a file here's a link for the newest version.
+- Download: <https://github.com/downloads/Muddr/ItemstoWarp/itemstowarp.jar>
 
 ## Features
 
@@ -15,7 +18,8 @@ A pay-to-warp plugin that can use any item as a currency to warp players to warp
 - List for all public warps
 - Personal list of warps
 - Permissions for all features
-	
+- Import warps from other warp plugins (currently only EcoWarp)
+
 ## Configuration
 
 ### Default config.yml:
@@ -43,6 +47,7 @@ A pay-to-warp plugin that can use any item as a currency to warp players to warp
 	  isolation: 'SERIALIZABLE'
 	  logging: false
 	  rebuild: false
+	  version: 2
 
 ### Explanation
 All settings will be shown in node syntax for ease of documentation, e.g. `currency.amount` will refer to the `amount` setting in the `currency` group.
@@ -101,36 +106,55 @@ It is highly recommended that this section of the config be left as-is. **Only a
 	Lists all public warps.
 - `/itw mylist`
 	Lists all your warps.
+- `/itm import <pluginname>`
+	Imports warps from <pluginname>
 
 ## Permissions
 - `itemstowarp.create`
 	Gives the ability to create warps.
+	default: all
 - `itemstowarp.makeprivate`
 	Gives the ability to make a warp private.
+	default: all
 - `itemstowarp.makeprivate.any`
 	Gives the ability to make **any** warp private.
+	default: op
 - `itemstowarp.remove`
 	Gives the ability to remove a warp.
+	default: all
 - `itemstowarp.remove.any`
 	Gives the ability to remove **any** warp.
+	default: op
 - `itemstowarp.warp`
 	Gives the ability to use warps
+	default: all
 - `itemstowarp.warp.any`
 	Gives the ability to use **any** warp, including private warps.
+	default: op
 - `itemstowarp.warp.nocost`
 	Gives the ability to bypass the warp fee when warping.
+	default: none
 - `itemstowarp.warp.sign`
 	Gives the ability to use sign warps.
+	default: all
 - `itemstowarp.warp.sign.create`
 	Gives the ability to create a sign warp.
+	default: all
 - `itemstowarp.warp.sign.removeany`
 	Gives the ability to remove **any** sign warp.
+	default: op
 - `itemstowarp.list`
 	Gives the ability to list all public warps.
+	default: all
 - `itemstowarp.list.all`
 	Gives the ability to list all warps, including private warps.
+	default: op
 - `itemstowarp.list.own`
 	Gives the ability to all the warps you created.
+	default: all
+- `itemstowarp.import`
+	Gives the ability to import warps from another plugin.
+	default: op
 
 ### Permission Sets
 These permissions include a set of the above permissions that can be used as some sensible defaults. The permissions included are listed below the set permission.
@@ -155,6 +179,7 @@ These permissions include a set of the above permissions that can be used as som
 - `itemstowarp.warp.sign.removeany`
 - `itemstowarp.list.all`
 - `itemstowarp.list.own`
+- `itemstowarp.import`
 
 ## Creating Sign Warps
 To create a sign warp place a sign with the following information:

@@ -1,5 +1,5 @@
 name: ItemstoWarp
-version: 1.2.1
+version: 2.0.0
 description: A pay to warp system
 authors: [Muddr]
 main: com.gtdclan.itemstowarp.Main
@@ -42,7 +42,7 @@ permissions:
   itemstowarp.warp.sign.create:
     description: Can create warp signs.
     default: true
-  itemstowarp.warp.sign.remove:
+  itemstowarp.warp.sign.removeany:
     description: Can remove warp signs.
     default: op
   itemstowarp.list:
@@ -77,3 +77,7 @@ permissions:
       itemstowarp.warp.sign.removeany: true
       itemstowarp.list.all: true
       itemstowarp.list.own: true
+      itemstowarp.import: true
+  itemstowarp.import:
+    description: Can import warps from other plugins
+    default: op

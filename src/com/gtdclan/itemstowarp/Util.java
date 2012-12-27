@@ -1,5 +1,10 @@
 package com.gtdclan.itemstowarp;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,6 +57,29 @@ public class Util {
 		}
 	}
 	
+	public void copyFile(File sourceFile, File destFile) throws IOException {
+		if (!destFile.exists()) {
+			destFile.createNewFile();
+		}
+		
+		FileChannel source = null;
+		FileChannel destination = null;
+		
+		try {
+			source = new FileInputStream(sourceFile).getChannel();
+			destination = new FileOutputStream(destFile).getChannel();
+			destination.transferFrom(source, 0, source.size());
+		}
+		finally {
+			if (source != null) {
+				source.close();
+			}
+			if (destination != null) {
+				destination.close();
+			}
+		}
+	}
+	
 	@SuppressWarnings("deprecation")
 	public Boolean hasAmount(String playerName) {
 		Player player = this.plugin.getServer().getPlayerExact(playerName);
@@ -66,7 +94,7 @@ public class Util {
 				has += item.getAmount();
 			}
 		}
-		if (has > feeAmount) {
+		if (has >= feeAmount) {
 			playerInv.removeItem(fee);
 			player.updateInventory();
 			return true;

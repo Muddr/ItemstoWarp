@@ -1,6 +1,7 @@
 package com.gtdclan.itemstowarp;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -16,6 +17,7 @@ public class Main extends JavaPlugin {
 	public UtilDatabase database;
 	public Listeners Listener = new Listeners(this);
 	public Boolean signProtected, cords, worlds, freeCreative;
+	public ImportUtil ImportUtil = new ImportUtil(this);
 	public Util Util = new Util(this);
 	public Integer warpAmount, warpItem, updatetool;
 	public Warps Warps = new Warps(this);
@@ -41,9 +43,9 @@ public class Main extends JavaPlugin {
 		    (String) this.Config.getProp("DB.password"),
 		    (String) this.Config.getProp("DB.isolation"),
 		    (Boolean) this.Config.getProp("DB.logging"),
-		    (Boolean) this.Config.getProp("DB.rebuild"));
+		    (Boolean) this.Config.getProp("DB.rebuildDB"));
 		
-		this.Config.setProp("DB.rebuild", false);
+		this.Config.setProp("DB.rebuildDB", false);
 	}
 	
 	@Override
@@ -72,8 +74,25 @@ public class Main extends JavaPlugin {
 		this.publicText = this.getConfig().getString("sign.text.public", "");
 		this.privateText = this.getConfig().getString("sign.text.private", "Private");
 		
+		// removes old config setting and rebuilds database for new version
+		if (this.getConfig().get("DB.rebuild") != null) {
+			this.getConfig().set("DB.rebuild", null);
+			this.saveConfig();
+			this.Config.setProp("DB.rebuildDB", true);
+			File original = new File(this.getDataFolder() + "/" + this.getName() + ".db");
+			File backup = new File(this.getDataFolder() + "/" + this.getName() + "-BACKUP.db");
+			try {
+				this.Util.copyFile(original, backup);
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		}
 		// Setup database
+		// this.Warps.beforeUpgrade(); future use
 		this.initializeDatabase();
+		// this.Warps.afterUpgrade(); future use
 		this.Util.console("Plugin has been enabled.", Level.INFO);
 	}
 }

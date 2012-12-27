@@ -15,6 +15,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.EbeanServerFactory;
+import com.avaje.ebean.SqlQuery;
+import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.config.DataSourceConfig;
 import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.dbplatform.SQLitePlatform;
@@ -26,10 +28,12 @@ public abstract class UtilDatabase {
 	
 	private ClassLoader classLoader;
 	private EbeanServer ebeanServer;
-	private final JavaPlugin javaPlugin;
+	private final Main plugin;
 	private Level loggerLevel;
 	private ServerConfig serverConfig;
 	private boolean usingSQLite;
+	
+	List<DB> templist = new ArrayList<DB>();
 	
 	/**
 	 * Hooks into the plugin.
@@ -37,9 +41,9 @@ public abstract class UtilDatabase {
 	 * @param instance
 	 *        The plugin instance.
 	 */
-	public UtilDatabase(JavaPlugin javaPlugin) {
-		// Store the JavaPlugin
-		this.javaPlugin = javaPlugin;
+	public UtilDatabase(Main plugin) {
+		// Store the plugin
+		this.plugin = plugin;
 		
 		// Try to get the ClassLoader of the plugin using Reflection
 		try {
@@ -49,7 +53,7 @@ public abstract class UtilDatabase {
 			method.setAccessible(true);
 			
 			// Store the ClassLoader
-			this.classLoader = (ClassLoader) method.invoke(javaPlugin);
+			this.classLoader = (ClassLoader) method.invoke(plugin);
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(
@@ -62,12 +66,51 @@ public abstract class UtilDatabase {
 	 * Method called after the loaded database has been created
 	 */
 	protected void afterCreateDatabase() {
+		for (DB warp : this.templist) {
+			DB data = this.plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warp.getWarpname()).findUnique();
+			if (data == null) {
+				data = new DB();
+				data.setIsprivate(warp.getIsprivate());
+				data.setPlayername(warp.getPlayername());
+				data.setWarpworld(warp.getWarpworld());
+				data.setWarpx(warp.getWarpx());
+				data.setWarpy(warp.getWarpy());
+				data.setWarpz(warp.getWarpz());
+				data.setWarpname(warp.getWarpname());
+				data.setWarppitch(0.0F);
+				data.setWarpyaw(0.0F);
+				this.plugin.database.getDatabase().save(data);
+			}
+			else {
+				this.plugin.Util.console("ERROR - DB UPGRADE: warp already in DB: " + warp.getWarpname(), Level.SEVERE);
+			}
+		}
 	}
 	
 	/**
 	 * Method called before the loaded database is being dropped
 	 */
 	protected void beforeDropDatabase() {
+		String sql = "select id, Isprivate, Playername, Warpname, Warpworld, Warpx, Warpy, Warpz from itw_data where id > 0";
+		SqlQuery sqlQuery = this.ebeanServer.createSqlQuery(sql);
+		List<SqlRow> warpList = sqlQuery.findList();
+		int i = 0;
+		if (warpList.size() > 0) {
+			
+			for (SqlRow warp : warpList) {
+				DB newWarp = new DB();
+				newWarp.setWarpname(warp.getString("Warpname"));
+				newWarp.setPlayername(warp.getString("Playername"));
+				newWarp.setWarpworld(warp.getString("Warpworld"));
+				newWarp.setWarpx(warp.getInteger("Warpx"));
+				newWarp.setWarpy(warp.getInteger("Warpy"));
+				newWarp.setWarpz(warp.getInteger("Warpz"));
+				newWarp.setIsprivate(warp.getBoolean("Isprivate"));
+				this.templist.add(newWarp);
+				i++;
+			}
+			this.plugin.Util.console("DB UPGRADE - " + i + " warps copied from DB", Level.INFO);
+		}
 	}
 	
 	private void disableDatabaseLogging(boolean logging) {
@@ -338,10 +381,10 @@ public abstract class UtilDatabase {
 	private String replaceDatabaseString(String input) {
 		input = input.replaceAll(
 		    "\\{DIR\\}",
-		    this.javaPlugin.getDataFolder().getPath().replaceAll("\\\\", "/") + "/");
+		    this.plugin.getDataFolder().getPath().replaceAll("\\\\", "/") + "/");
 		input = input.replaceAll(
 		    "\\{NAME\\}",
-		    this.javaPlugin.getDescription().getName().replaceAll("[^\\w_-]", ""));
+		    this.plugin.getDescription().getName().replaceAll("[^\\w_-]", ""));
 		
 		return input;
 	}

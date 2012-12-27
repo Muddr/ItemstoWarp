@@ -17,6 +17,14 @@ public class Warps {
 		this.plugin = instance;
 	}
 	
+	public void afterUpgrade() {
+		// future use
+	}
+	
+	public void beforeUpgrade() {
+		// future use
+	}
+	
 	public void createWarp(String playerName, Location playerloc, String warpName) {
 		String[] messages;
 		DB data = this.plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
@@ -28,6 +36,8 @@ public class Warps {
 			data.setWarpx(playerloc.getBlockX());
 			data.setWarpy(playerloc.getBlockY());
 			data.setWarpz(playerloc.getBlockZ());
+			data.setWarppitch(playerloc.getPitch());
+			data.setWarpyaw(playerloc.getYaw());
 			data.setWarpname(warpName);
 			this.plugin.database.getDatabase().save(data);
 			messages = new String[] {
@@ -87,6 +97,16 @@ public class Warps {
 			else {
 				player.sendMessage(this.plugin.Util.parseColors("You can not toggle a warp that you don't own."));
 			}
+		}
+	}
+	
+	public Boolean warpExists(String warpName) {
+		DB data = this.plugin.database.getDatabase().find(DB.class).where().ieq("Warpname", warpName).findUnique();
+		if (data == null) {
+			return false;
+		}
+		else {
+			return true;
 		}
 	}
 	
@@ -194,7 +214,7 @@ public class Warps {
 					double warpx = data.getWarpx() + 0.5;
 					double warpy = data.getWarpy() + 0.5;
 					double warpz = data.getWarpz() + 0.5;
-					Location warpLoc = new Location(warpWorld, warpx, warpy, warpz);
+					Location warpLoc = new Location(warpWorld, warpx, warpy, warpz, data.getWarpyaw(), data.getWarppitch());
 					player.teleport(warpLoc);
 				}
 				else {
